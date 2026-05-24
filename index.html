@@ -1915,34 +1915,38 @@ footer {
 </section>
 
 <!-- DOWNLOAD -->
-<section class="section" id="download">
+<section class="section" id="download" style="padding: 80px 48px;">
   <div class="section-inner">
-    <div class="section-label" data-num="06">Download</div>
-    <h2 class="section-title">ЗАВАНТАЖИТИ<br><em>NETGUARDIAN</em></h2>
-
-    <div class="download-box" id="dlBox">
-      <div class="download-corner">v1.0</div>
+    <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:32px; flex-wrap:wrap; gap:16px;">
       <div>
-        <div class="version-badge">
-          <div class="version-dot"></div>
-          Beta v1.0.4 · Stable Build
+        <div class="section-label" data-num="07">Download</div>
+        <h2 class="section-title" style="font-size:clamp(28px,4vw,48px); margin-bottom:0;">ЗАВАНТАЖИТИ <em>NETGUARDIAN</em></h2>
+      </div>
+      <div style="font-family:var(--font-mono); font-size:13px; color:var(--mint); border:1px solid rgba(77,255,195,0.3); padding:8px 20px; letter-spacing:2px;">
+        ● BETA V1.0.4 · STABLE
+      </div>
+    </div>
+
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; align-items:start;">
+
+      <!-- LEFT: specs + button -->
+      <div style="background:rgba(10,10,28,0.65); backdrop-filter:blur(20px); border:1px solid rgba(77,255,195,0.2); border-left:3px solid var(--mint); padding:28px 32px;">
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:0; margin-bottom:24px;">
+          <div style="padding:10px 0; border-bottom:1px solid rgba(255,255,255,0.05);"><span style="font-family:var(--font-mono); font-size:12px; color:var(--muted); display:block; margin-bottom:3px;">OS</span><span style="font-size:15px; color:#fff;">Windows 10/11</span></div>
+          <div style="padding:10px 0; border-bottom:1px solid rgba(255,255,255,0.05); padding-left:20px;"><span style="font-family:var(--font-mono); font-size:12px; color:var(--muted); display:block; margin-bottom:3px;">Python</span><span style="font-size:15px; color:#fff;">3.10+</span></div>
+          <div style="padding:10px 0; border-bottom:1px solid rgba(255,255,255,0.05);"><span style="font-family:var(--font-mono); font-size:12px; color:var(--muted); display:block; margin-bottom:3px;">RAM</span><span style="font-size:15px; color:#fff;">Мін. 2 GB</span></div>
+          <div style="padding:10px 0; border-bottom:1px solid rgba(255,255,255,0.05); padding-left:20px;"><span style="font-family:var(--font-mono); font-size:12px; color:var(--muted); display:block; margin-bottom:3px;">Disk</span><span style="font-size:15px; color:#fff;">150 MB</span></div>
+          <div style="padding:10px 0;"><span style="font-family:var(--font-mono); font-size:12px; color:var(--muted); display:block; margin-bottom:3px;">Розмір</span><span style="font-size:15px; color:var(--mint); font-weight:600;">24.5 MB · .exe</span></div>
+          <div style="padding:10px 0; padding-left:20px;"><span style="font-family:var(--font-mono); font-size:12px; color:var(--muted); display:block; margin-bottom:3px;">Мережа</span><span style="font-size:15px; color:#fff;">Ethernet / Wi-Fi</span></div>
         </div>
-        <h3 class="download-title">DESKTOP<br><em>AGENT</em></h3>
-        <ul class="req-list">
-          <li class="req-item"><span class="req-key">OS</span><span class="req-val">Windows 10/11, Linux</span></li>
-          <li class="req-item"><span class="req-key">Python</span><span class="req-val">3.10 або новіша</span></li>
-          <li class="req-item"><span class="req-key">RAM</span><span class="req-val">Мінімум 2 GB</span></li>
-          <li class="req-item"><span class="req-key">Disk</span><span class="req-val">150 MB вільного місця</span></li>
-          <li class="req-item"><span class="req-key">Network</span><span class="req-val">Ethernet / Wi-Fi</span></li>
-          <li class="req-item"><span class="req-key">Size</span><span class="req-val">24.5 MB</span></li>
-        </ul>
-        <a href="NetGuardian_v1.0.4.exe" download="NetGuardian_v1.0.4.exe" id="dlBtn" class="btn-primary" style="width:100%; display:flex; align-items:center; justify-content:center; gap:10px; text-decoration:none;">
-  ▼ &nbsp; Завантажити NetGuardian &nbsp;<span style="font-size:10px; opacity:.6;">(24.5 MB .exe)</span>
-</a>
-        <p style="font-family:var(--font-mono); font-size:10px; color:var(--muted); margin-top:12px; letter-spacing:1px;">🔒 БЕЗПЕЧНЕ ЗАВАНТАЖЕННЯ · БЕЗ РЕКЛАМИ</p>
+        <a href="NetGuardian_v1.0.4.exe" download="NetGuardian_v1.0.4.exe" id="dlBtn" class="btn-primary" style="width:100%; display:flex; align-items:center; justify-content:center; gap:10px; text-decoration:none; font-size:15px;">
+          ▼ &nbsp; Завантажити NetGuardian
+        </a>
+        <p style="font-family:var(--font-mono); font-size:11px; color:var(--muted); margin-top:10px; letter-spacing:1px; text-align:center;">🔒 БЕЗПЕЧНЕ ЗАВАНТАЖЕННЯ · БЕЗ РЕКЛАМИ</p>
       </div>
 
-      <div class="changelog-term">
+      <!-- RIGHT: compact changelog -->
+      <div class="changelog-term" style="max-height:320px;">
         <div class="changelog-header">
           <div class="dot dot-r"></div>
           <div class="dot dot-y"></div>
@@ -1951,30 +1955,27 @@ footer {
         </div>
         <div class="changelog-body">
           <div class="cl-version"><span>v1.0.4</span><span class="cl-date">2026-01-28</span></div>
-          <div class="cl-line"><span class="cl-plus">+</span><span>Added Raspberry Pi Zero 2 W support</span></div>
-          <div class="cl-line"><span class="cl-plus">+</span><span>TP-Link Tapo P110 Local API integration</span></div>
-          <div class="cl-line"><span class="cl-plus">+</span><span>Voltage Guardian energy monitoring</span></div>
-          <div class="cl-line"><span class="cl-star">*</span><span>Improved AI log interpretation accuracy</span></div>
+          <div class="cl-line"><span class="cl-plus">+</span><span>Raspberry Pi Zero 2 W support</span></div>
+          <div class="cl-line"><span class="cl-plus">+</span><span>Tapo P110 Local API integration</span></div>
+          <div class="cl-line"><span class="cl-plus">+</span><span>Voltage Guardian monitoring</span></div>
           <div class="cl-line"><span class="cl-minus">-</span><span>Fixed DNS leak on VPN switch</span></div>
-          <div style="height:1px; background:var(--border); margin:12px 0;"></div>
+          <div style="height:1px; background:var(--border); margin:10px 0;"></div>
           <div class="cl-version"><span style="color:var(--gold)">v1.0.3</span><span class="cl-date">2026-01-15</span></div>
-          <div class="cl-line"><span class="cl-plus">+</span><span>Telegram bot remote screenshot</span></div>
-          <div class="cl-line"><span class="cl-star">*</span><span>Enhanced game mode optimizer</span></div>
+          <div class="cl-line"><span class="cl-plus">+</span><span>Telegram remote screenshot</span></div>
           <div class="cl-line"><span class="cl-minus">-</span><span>Fixed ping calculation overflow</span></div>
-          <div style="height:1px; background:var(--border); margin:12px 0;"></div>
+          <div style="height:1px; background:var(--border); margin:10px 0;"></div>
           <div class="cl-version"><span style="color:var(--gold)">v1.0.2</span><span class="cl-date">2025-12-20</span></div>
           <div class="cl-line"><span class="cl-plus">+</span><span>LAN Security Audit module</span></div>
           <div class="cl-line"><span class="cl-plus">+</span><span>Link Speed Monitor</span></div>
-          <div class="cl-line"><span class="cl-star">*</span><span>UI dark theme improvements</span></div>
-          <div style="height:1px; background:var(--border); margin:12px 0;"></div>
+          <div style="height:1px; background:var(--border); margin:10px 0;"></div>
           <div class="cl-version"><span style="color:var(--muted)">v1.0.1</span><span class="cl-date">2025-12-01</span></div>
-          <div class="cl-line"><span class="cl-plus">+</span><span>Initial public beta release</span></div>
+          <div class="cl-line"><span class="cl-plus">+</span><span>Initial beta release</span></div>
           <div class="cl-line"><span class="cl-plus">+</span><span>Core diagnostics engine (L1–L7)</span></div>
-          <div class="cl-line"><span class="cl-plus">+</span><span>LLM log humanizer integration</span></div>
-          <div style="height:16px;"></div>
-          <div style="color:var(--muted); font-size:10px;"><span class="cl-plus">+</span> Added &nbsp; <span class="cl-star">*</span> Changed &nbsp; <span class="cl-minus">-</span> Fixed</div>
+          <div style="height:10px;"></div>
+          <div style="color:var(--muted); font-size:11px;"><span class="cl-plus">+</span> Added &nbsp;<span class="cl-star">*</span> Changed &nbsp;<span class="cl-minus">-</span> Fixed</div>
         </div>
       </div>
+
     </div>
   </div>
 </section>
