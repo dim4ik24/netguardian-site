@@ -1317,6 +1317,7 @@ footer {
     <li><a href="#features">Функції</a></li>
     <li><a href="#hardware">Апаратна частина</a></li>
     <li><a href="#telegram">Telegram</a></li>
+    <li><a href="#future">Покращення</a></li>
     <li><a href="#download">Завантажити</a></li>
   </ul>
   <div class="nav-badge">Beta v1.0.4</div>
@@ -1810,6 +1811,109 @@ footer {
 
 <div class="divider"></div>
 
+<!-- FUTURE IMPROVEMENTS -->
+<section class="section" id="future">
+  <div class="section-inner">
+    <div class="section-label" data-prefix="06">Розвиток</div>
+    <h2 class="section-title">Напрями<br><em>вдосконалення</em></h2>
+    <p class="section-desc">Перспективні покращення системи для подальших досліджень та розробки</p>
+
+    <div class="cards-grid cards-grid-2" style="gap:14px;">
+
+      <div class="card-3d">
+        <div class="card-3d-inner">
+          <div class="card-num">01</div>
+          <div class="card-icon icon-lav">📱</div>
+          <div class="card-title">Мобільний застосунок</div>
+          <div class="card-desc">Розробка повноцінного Android/iOS додатку з графіками в реальному часі та push-сповіщеннями — замість поточного Telegram-бота як тимчасового рішення.<span class="card-tech">React Native / Flutter + WebSocket API</span></div>
+        </div>
+      </div>
+
+      <div class="card-3d">
+        <div class="card-3d-inner">
+          <div class="card-num">02</div>
+          <div class="card-icon icon-mint">☁️</div>
+          <div class="card-title">Хмарний бекенд</div>
+          <div class="card-desc">Перенесення збору метрик на хмарний сервер для перегляду статистики мережі з будь-якого пристрою через браузер, незалежно від стану домашнього ПК.<span class="card-tech">AWS / GCP + веб-дашборд</span></div>
+        </div>
+      </div>
+
+      <div class="card-3d">
+        <div class="card-3d-inner">
+          <div class="card-num">03</div>
+          <div class="card-icon icon-gold">🧬</div>
+          <div class="card-title">ML замість правил</div>
+          <div class="card-desc">Заміна 230+ фіксованих правил діагностики на ML-модель, що навчається на реальних даних конкретної мережі та адаптується під поведінку кожного користувача.<span class="card-tech">scikit-learn / LSTM · anomaly detection</span></div>
+        </div>
+      </div>
+
+      <div class="card-3d">
+        <div class="card-3d-inner">
+          <div class="card-num">04</div>
+          <div class="card-icon icon-coral">🔐</div>
+          <div class="card-title">Шифрування MQTT</div>
+          <div class="card-desc">Поточна передача даних між Pi і ПК через публічний HiveMQ-брокер не захищена. Впровадження TLS та автентифікації закриє цю вразливість.<span class="card-tech">TLS 1.3 + X.509 certificates · private broker</span></div>
+        </div>
+      </div>
+
+      <div class="card-3d">
+        <div class="card-3d-inner">
+          <div class="card-num">05</div>
+          <div class="card-icon icon-mint">🌐</div>
+          <div class="card-title">Підтримка IPv6</div>
+          <div class="card-desc">Система повністю побудована на IPv4. З поступовим переходом інтернету на IPv6 це стає критичним обмеженням для широкого застосування.<span class="card-tech">Dual-stack IPv4/IPv6 · ICMPv6 діагностика</span></div>
+        </div>
+      </div>
+
+      <div class="card-3d">
+        <div class="card-3d-inner">
+          <div class="card-num">06</div>
+          <div class="card-icon icon-lav">🔌</div>
+          <div class="card-title">Інтеграція з роутером</div>
+          <div class="card-desc">Пряма інтеграція з API роутера дозволить перезапускати сервіси, змінювати DNS і керувати QoS без фізичного вимкнення живлення через Tapo.<span class="card-tech">OpenWrt / DD-WRT REST API · SSH</span></div>
+        </div>
+      </div>
+
+      <div class="card-3d">
+        <div class="card-3d-inner">
+          <div class="card-num">07</div>
+          <div class="card-icon icon-gold">📊</div>
+          <div class="card-title">Автозвіти для провайдера</div>
+          <div class="card-desc">Автоматична генерація щомісячного PDF-звіту з графіками SLA, кількістю інцидентів та хронологією збоїв — для офіційних претензій до провайдера.<span class="card-tech">ReportLab PDF · підписані timestamp-дані</span></div>
+        </div>
+      </div>
+
+      <div class="card-3d">
+        <div class="card-3d-inner">
+          <div class="card-num">08</div>
+          <div class="card-icon icon-coral">🖥️</div>
+          <div class="card-title">Windows Service</div>
+          <div class="card-desc">Встановлення як системна служба Windows забезпечить автоматичний запуск при старті ОС, роботу у фоні без графічного вікна та відновлення після збоїв.<span class="card-tech">pywin32 · NSSM · Windows Task Scheduler</span></div>
+        </div>
+      </div>
+
+      <div class="card-3d">
+        <div class="card-3d-inner">
+          <div class="card-num">09</div>
+          <div class="card-icon icon-mint">🍓</div>
+          <div class="card-title">Кілька Pi-агентів</div>
+          <div class="card-desc">Підтримка мережі з кількох Pi-агентів у різних частинах будинку чи офісу для точнішої локалізації проблем і моніторингу великих інфраструктур.<span class="card-tech">MQTT topics per agent · агрегація метрик</span></div>
+        </div>
+      </div>
+
+      <div class="card-3d">
+        <div class="card-3d-inner">
+          <div class="card-num">10</div>
+          <div class="card-icon icon-lav">🌍</div>
+          <div class="card-title">Підтримка кількох мереж</div>
+          <div class="card-desc">Централізований моніторинг кількох мереж одночасно — для офісів, коворкінгів або провайдерів, що обслуговують кілька об'єктів.<span class="card-tech">Multi-tenant архітектура · роль-базована авторизація</span></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
 <!-- DOWNLOAD -->
 <section class="section" id="download">
   <div class="section-inner">
@@ -1883,6 +1987,7 @@ footer {
       <a href="#architecture">Архітектура</a>
       <a href="#hardware">Hardware</a>
       <a href="#telegram">Telegram</a>
+      <a href="#future">Покращення</a>
       <a href="#download">Download</a>
       <a href="https://t.me/NetGuardianAlert_bot" target="_blank" style="color:var(--lavender); border:1px solid rgba(184,169,255,0.3); padding:6px 14px; font-size:12px; letter-spacing:1px;">📱 @NetGuardianAlert_bot</a>
     </div>
@@ -3307,6 +3412,8 @@ function initAllBGlow() {
 
   // Telegram mock
   document.querySelectorAll('.tg-mock').forEach(el => buildBGlow(el,'lavender','rgba(13,13,32,0.72)'));
+
+  // Future improvements — already handled by card-3d-inner above
 
   // Step items  
   document.querySelectorAll('.step-item').forEach(el => {
