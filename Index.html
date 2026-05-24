@@ -1,0 +1,3388 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NetGuardian — Network Intelligence System</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #060612;
+  --bg2: #080818;
+  --card: #0D0D20;
+  --border: rgba(255,255,255,0.08);
+  --border-hover: rgba(77,255,195,0.4);
+  --mint: #4DFFC3;
+  --coral: #FF6855;
+  --lavender: #B8A9FF;
+  --gold: #FFD166;
+  --text: #E2E2F0;
+  --muted: #7A7A9A;
+  --font-display: 'Bebas Neue', sans-serif;
+  --font-body: 'Outfit', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+}
+
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
+  overflow-x: hidden;
+  cursor: none;
+}
+
+/* ── GLOBAL ANIMATED BACKGROUND BLOBS ── */
+#bg-blobs {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+}
+.blob {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  animation: blobFloat 20s ease-in-out infinite alternate;
+  will-change: transform;
+}
+.blob-1 {
+  width: 900px; height: 900px;
+  top: -250px; left: -200px;
+  background: radial-gradient(circle, rgba(77,255,195,0.35) 0%, rgba(77,255,195,0.12) 40%, transparent 70%);
+  animation-duration: 22s;
+}
+.blob-2 {
+  width: 800px; height: 800px;
+  top: 15%; right: -250px;
+  background: radial-gradient(circle, rgba(184,169,255,0.32) 0%, rgba(140,100,255,0.12) 40%, transparent 70%);
+  animation-duration: 28s;
+  animation-delay: -8s;
+}
+.blob-3 {
+  width: 650px; height: 650px;
+  bottom: 5%; left: 25%;
+  background: radial-gradient(circle, rgba(255,104,85,0.28) 0%, rgba(255,60,40,0.10) 40%, transparent 70%);
+  animation-duration: 24s;
+  animation-delay: -14s;
+}
+.blob-4 {
+  width: 550px; height: 550px;
+  top: 55%; left: -80px;
+  background: radial-gradient(circle, rgba(255,209,102,0.26) 0%, rgba(255,180,0,0.10) 40%, transparent 70%);
+  animation-duration: 32s;
+  animation-delay: -5s;
+}
+.blob-5 {
+  width: 500px; height: 500px;
+  bottom: -80px; right: 15%;
+  background: radial-gradient(circle, rgba(0,217,255,0.28) 0%, rgba(0,180,255,0.10) 40%, transparent 70%);
+  animation-duration: 26s;
+  animation-delay: -18s;
+}
+/* Extra blobs for mid-page depth */
+.blob-6 {
+  width: 420px; height: 420px;
+  top: 40%; left: 42%;
+  background: radial-gradient(circle, rgba(255,100,200,0.18) 0%, transparent 70%);
+  animation-duration: 30s;
+  animation-delay: -22s;
+}
+.blob-7 {
+  width: 380px; height: 380px;
+  top: 80%; right: 30%;
+  background: radial-gradient(circle, rgba(77,255,195,0.22) 0%, transparent 70%);
+  animation-duration: 20s;
+  animation-delay: -3s;
+}
+@keyframes blobFloat {
+  0%   { transform: translate(0,0) scale(1); }
+  25%  { transform: translate(70px,-50px) scale(1.1); }
+  50%  { transform: translate(-40px,80px) scale(0.92); }
+  75%  { transform: translate(90px,40px) scale(1.07); }
+  100% { transform: translate(-60px,-70px) scale(1.03); }
+}
+
+/* ── CUSTOM CURSOR ── */
+#cursor {
+  position: fixed;
+  width: 12px; height: 12px;
+  background: var(--mint);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 9999;
+  transform: translate(-50%,-50%);
+  transition: width .2s, height .2s, background .2s;
+  mix-blend-mode: screen;
+}
+#cursor-glow {
+  position: fixed;
+  width: 500px; height: 500px;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 1;
+  transform: translate(-50%,-50%);
+  background: radial-gradient(circle, rgba(77,255,195,0.15) 0%, rgba(77,255,195,0.05) 40%, transparent 65%);
+  transition: transform .08s linear;
+}
+body:hover #cursor { opacity:1; }
+
+/* ── NOISE OVERLAY ── */
+body::before {
+  content:'';
+  position:fixed;
+  inset:0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+  opacity:.2;
+  pointer-events:none;
+  z-index: 0;
+}
+
+/* ── DIPLOMA CARD ── */
+.diploma-card {
+  background: rgba(10,10,28,0.65);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(77,255,195,0.2);
+  border-left: 3px solid var(--mint);
+  padding: 26px 30px;
+  position: relative;
+  overflow: hidden;
+}
+.diploma-card::before {
+  content: 'КАІ · 2026';
+  position: absolute;
+  top: 14px; right: 18px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 3px;
+  color: rgba(77,255,195,0.25);
+}
+.diploma-top-label {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  letter-spacing: 3px;
+  color: var(--mint);
+  margin-bottom: 18px;
+  text-transform: uppercase;
+}
+.diploma-rows { display: flex; flex-direction: column; gap: 0; }
+.drow {
+  display: flex;
+  align-items: baseline;
+  gap: 16px;
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+.drow:last-child { border-bottom: none; }
+.dk {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  letter-spacing: 1px;
+  color: var(--muted);
+  min-width: 140px;
+  flex-shrink: 0;
+  text-transform: uppercase;
+}
+.dv { font-size: 16px; color: #ccc; line-height: 1.5; }
+.dv-name { color: #fff; font-weight: 700; font-size: 20px; }
+.dv-mint { color: var(--mint); font-weight: 600; font-family: var(--font-mono); font-size: 18px; }
+
+/* ── INFO PANELS ── */
+.info-panel {
+  background: rgba(10,10,28,0.60);
+  backdrop-filter: blur(18px);
+  border: 1px solid rgba(255,255,255,0.09);
+  padding: 24px 28px;
+  animation: cardReveal .5s ease both;
+}
+.info-panel-label {
+  font-family: var(--font-mono);
+  font-size: 14px;
+  letter-spacing: 3px;
+  color: var(--mint);
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.info-panel-label::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: rgba(77,255,195,0.15);
+}
+.info-panel-text {
+  font-size: 17px;
+  color: #ccc;
+  line-height: 1.8;
+}
+
+/* ── PROBLEMS LIST ── */
+.problems-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  margin-top: 4px;
+}
+.problems-list li {
+  display: flex;
+  align-items: flex-start;
+  gap: 18px;
+  padding: 14px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+  transition: background .2s;
+}
+.problems-list li:last-child { border-bottom: none; }
+.problems-list li::before { display: none; }
+.prob-num {
+  font-family: var(--font-display);
+  font-size: 40px;
+  line-height: 1;
+  flex-shrink: 0;
+  width: 46px;
+  opacity: .9;
+}
+.prob-title {
+  font-size: 17px;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 5px;
+}
+.prob-desc {
+  font-size: 15px;
+  color: #aaa;
+  line-height: 1.65;
+}
+
+/* ── NAV ── */
+nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 100;
+  padding: 24px 48px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--border);
+  background: rgba(6,6,18,0.60);
+  backdrop-filter: blur(28px);
+  border-bottom-color: rgba(255,255,255,0.1);
+}
+.nav-logo {
+  font-family: var(--font-display);
+  font-size: 28px;
+  letter-spacing: 3px;
+  color: var(--mint);
+  text-shadow: 0 0 30px rgba(77,255,195,0.5);
+}
+.nav-links {
+  display: flex;
+  gap: 40px;
+  list-style: none;
+}
+.nav-links a {
+  font-size: 14px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--muted);
+  text-decoration: none;
+  transition: color .3s;
+}
+.nav-links a:hover { color: var(--mint); }
+.nav-badge {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  padding: 6px 14px;
+  border: 1px solid rgba(77,255,195,0.3);
+  border-radius: 2px;
+  color: var(--mint);
+  letter-spacing: 1px;
+}
+
+/* ── HERO ── */
+.hero {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  padding: 120px 48px 80px;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Dot grid background */
+.hero::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(circle, rgba(255,255,255,0.10) 1px, transparent 1px);
+  background-size: 28px 28px;
+  pointer-events: none;
+}
+
+.hero-content {
+  max-width: 1400px;
+  margin: 0 auto;
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 80px;
+  align-items: center;
+  position: relative;
+  z-index: 2;
+}
+
+.hero-label {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  color: var(--mint);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+.hero-label::before {
+  content:'';
+  width: 40px; height: 1px;
+  background: var(--mint);
+}
+
+.hero-title {
+  font-family: var(--font-display);
+  font-size: clamp(80px, 10vw, 140px);
+  line-height: .92;
+  letter-spacing: 2px;
+  color: #fff;
+}
+.hero-title span {
+  color: var(--mint);
+  text-shadow: 0 0 40px rgba(77,255,195,0.6), 0 0 80px rgba(77,255,195,0.25);
+}
+
+.hero-sub {
+  margin-top: 32px;
+  font-size: 16px;
+  line-height: 1.7;
+  color: var(--muted);
+  max-width: 460px;
+}
+
+.hero-tags {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 40px;
+}
+.tag {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  padding: 10px 20px;
+  border-radius: 2px;
+  border: 1px solid;
+}
+.tag-mint { border-color: rgba(77,255,195,0.4); color: var(--mint); background: rgba(77,255,195,0.05); }
+.tag-coral { border-color: rgba(255,104,85,0.4); color: var(--coral); background: rgba(255,104,85,0.05); }
+.tag-lav { border-color: rgba(184,169,255,0.4); color: var(--lavender); background: rgba(184,169,255,0.05); }
+
+.hero-cta {
+  display: flex;
+  gap: 16px;
+  margin-top: 48px;
+}
+
+.btn-primary {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  padding: 16px 36px;
+  background: var(--mint);
+  color: #04040A;
+  border: none;
+  cursor: none;
+  font-weight: 600;
+  clip-path: polygon(8px 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%, 0 8px);
+  transition: all .3s;
+  position: relative;
+  overflow: hidden;
+}
+.btn-primary::after {
+  content:'';
+  position: absolute;
+  inset: 0;
+  background: rgba(255,255,255,0.2);
+  transform: translateX(-100%);
+  transition: transform .3s;
+}
+.btn-primary:hover::after { transform: translateX(0); }
+
+.btn-secondary {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  padding: 16px 36px;
+  background: transparent;
+  color: var(--muted);
+  border: 1px solid var(--border);
+  cursor: none;
+  transition: all .3s;
+  clip-path: polygon(8px 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%, 0 8px);
+}
+.btn-secondary:hover { border-color: rgba(255,255,255,0.2); color: var(--text); }
+
+/* ── HERO RIGHT: TERMINAL BOX 3D ── */
+.hero-visual {
+  perspective: 1000px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.terminal-3d {
+  width: 100%;
+  max-width: 520px;
+  background: rgba(10,10,28,0.65);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(77,255,195,0.25);
+  border-radius: 4px;
+  padding: 28px;
+  transform-style: preserve-3d;
+  box-shadow:
+    0 0 0 1px rgba(77,255,195,0.05),
+    0 30px 80px rgba(0,0,0,0.6),
+    0 0 100px rgba(77,255,195,0.08);
+  transition: transform .15s ease-out, box-shadow .15s;
+  cursor: none;
+}
+.terminal-3d:hover {
+  box-shadow:
+    0 0 0 1px rgba(77,255,195,0.2),
+    0 40px 100px rgba(0,0,0,0.8),
+    0 0 120px rgba(77,255,195,0.15);
+}
+.terminal-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 20px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--border);
+}
+.dot { width:10px; height:10px; border-radius:50%; }
+.dot-r { background:#FF5F57; }
+.dot-y { background:#FEBC2E; }
+.dot-g { background:#28C840; }
+.term-title { font-family: var(--font-mono); font-size: 12px; color: var(--muted); margin-left: 8px; }
+
+.term-line {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  line-height: 2.2;
+  opacity: 0;
+  animation: termAppear .4s forwards;
+}
+.term-line:nth-child(1) { animation-delay: .6s; }
+.term-line:nth-child(2) { animation-delay: 1.1s; }
+.term-line:nth-child(3) { animation-delay: 1.6s; }
+.term-line:nth-child(4) { animation-delay: 2.1s; }
+.term-line:nth-child(5) { animation-delay: 2.6s; }
+.term-line:nth-child(6) { animation-delay: 3.0s; }
+.term-line:nth-child(7) { animation-delay: 3.4s; }
+
+@keyframes termAppear {
+  from { opacity: 0; transform: translateX(-6px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+.term-prompt { color: var(--muted); }
+.term-cmd { color: #fff; }
+.term-ok { color: var(--mint); }
+.term-warn { color: var(--gold); }
+.term-err { color: var(--coral); }
+.term-info { color: var(--lavender); }
+.term-cursor { animation: blink 1s infinite; color: var(--mint); }
+@keyframes blink { 0%,49%{opacity:1} 50%,100%{opacity:0} }
+
+/* ── SECTION WRAPPER ── */
+.section {
+  padding: 120px 48px;
+  position: relative;
+  z-index: 2;
+}
+.section-inner { max-width: 1400px; margin: 0 auto; }
+
+.section-label {
+  font-family: var(--font-mono);
+  font-size: 14px;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  color: var(--muted);
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+.section-label::before {
+  content: attr(data-num);
+  color: var(--mint);
+  opacity: .5;
+}
+
+.section-title {
+  font-family: var(--font-display);
+  font-size: clamp(36px, 4.5vw, 58px);
+  line-height: 1.05;
+  letter-spacing: 2px;
+  margin-bottom: 16px;
+}
+.section-title em { font-style: normal; color: var(--mint); }
+.section-desc {
+  font-size: 18px;
+  color: var(--muted);
+  max-width: 640px;
+  line-height: 1.75;
+  margin-bottom: 64px;
+}
+
+/* ── 3D TILT CARDS ── */
+.cards-grid {
+  display: grid;
+  gap: 16px;
+}
+.cards-grid-3 { grid-template-columns: repeat(3, 1fr); }
+.cards-grid-4 { grid-template-columns: repeat(4, 1fr); }
+.cards-grid-2 { grid-template-columns: repeat(2, 1fr); }
+
+.card-3d {
+  perspective: 800px;
+}
+.card-3d-inner {
+  background: rgba(13,13,32,0.75);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 4px;
+  padding: 36px 32px;
+  transform-style: preserve-3d;
+  transition: transform .12s ease-out, border-color .3s, box-shadow .3s;
+  position: relative;
+  overflow: hidden;
+  cursor: none;
+}
+.card-3d-inner::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at var(--mx, 50%) var(--my, 50%), rgba(77,255,195,0.12) 0%, transparent 60%);
+  opacity: 0;
+  transition: opacity .3s;
+}
+.card-3d-inner:hover::before { opacity: 1; }
+.card-3d-inner:hover {
+  border-color: rgba(77,255,195,0.35);
+  box-shadow: 0 20px 60px rgba(0,0,0,0.4), 0 0 50px rgba(77,255,195,0.1);
+}
+
+.card-icon {
+  width: 48px; height: 48px;
+  border-radius: 3px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 24px;
+  font-size: 22px;
+}
+.icon-mint { background: rgba(77,255,195,0.15); border: 1px solid rgba(77,255,195,0.3); color: var(--mint); }
+.icon-coral { background: rgba(255,104,85,0.15); border: 1px solid rgba(255,104,85,0.3); color: var(--coral); }
+.icon-lav { background: rgba(184,169,255,0.15); border: 1px solid rgba(184,169,255,0.3); color: var(--lavender); }
+.icon-gold { background: rgba(255,209,102,0.15); border: 1px solid rgba(255,209,102,0.3); color: var(--gold); }
+
+.card-title {
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 10px;
+  color: #fff;
+}
+.card-desc {
+  font-size: 16px;
+  line-height: 1.75;
+  color: var(--muted);
+}
+.card-tech {
+  display: block;
+  margin-top: 10px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: rgba(77,255,195,0.45);
+  letter-spacing: 0.5px;
+  border-top: 1px solid rgba(255,255,255,0.05);
+  padding-top: 8px;
+}
+.card-num {
+  position: absolute;
+  top: 28px; right: 28px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: rgba(255,255,255,0.07);
+  font-weight: 600;
+}
+
+/* Wide card */
+.card-wide { grid-column: span 2; }
+.card-wide .card-3d-inner { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; }
+
+/* ── ARCHITECTURE SECTION ── */
+.arch-boxes {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2px;
+  margin-top: 64px;
+}
+.arch-box {
+  background: rgba(13,13,32,0.72);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(255,255,255,0.1);
+  padding: 48px 36px;
+  transform-style: preserve-3d;
+  transition: transform .12s ease-out, background .3s, border-color .3s;
+  cursor: none;
+  position: relative;
+  overflow: hidden;
+}
+.arch-box::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--accent-color, var(--mint)), transparent);
+  transform: scaleX(0);
+  transition: transform .4s;
+}
+.arch-box:hover::after { transform: scaleX(1); }
+.arch-box:hover {
+  background: rgba(15,15,38,0.88);
+  border-color: rgba(255,255,255,0.18);
+}
+
+.arch-box-num {
+  font-family: var(--font-mono);
+  font-size: 14px;
+  letter-spacing: 3px;
+  color: var(--muted);
+  margin-bottom: 32px;
+}
+.arch-box-icon {
+  font-size: 52px;
+  margin-bottom: 24px;
+}
+.arch-box-title {
+  font-family: var(--font-display);
+  font-size: 38px;
+  letter-spacing: 2px;
+  margin-bottom: 20px;
+}
+.arch-box-badge {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  padding: 7px 14px;
+  border-radius: 2px;
+  margin-bottom: 28px;
+}
+.arch-box-items {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.arch-box-items li {
+  font-size: 18px;
+  color: var(--muted);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 3px 0;
+}
+.arch-box-items li::before {
+  content: '';
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+  flex-shrink: 0;
+}
+
+/* ── WATCHDOG SECTION ── */
+.watchdog-grid {
+  display: grid;
+  grid-template-columns: 1fr 1.2fr;
+  gap: 2px;
+  margin-top: 64px;
+}
+.watchdog-visual {
+  background: rgba(13,13,32,0.72);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(255,255,255,0.1);
+  padding: 48px;
+}
+.watchdog-steps {
+  background: rgba(13,13,32,0.72);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(255,255,255,0.1);
+  padding: 48px;
+}
+.step-item {
+  display: flex;
+  gap: 24px;
+  padding: 24px 0;
+  border-bottom: 1px solid var(--border);
+  position: relative;
+}
+.step-item:last-child { border-bottom: none; }
+.step-num {
+  font-family: var(--font-display);
+  font-size: 48px;
+  line-height: 1;
+  color: rgba(255,255,255,0.06);
+  flex-shrink: 0;
+  width: 56px;
+}
+.step-content {}
+.step-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #fff;
+  margin-bottom: 6px;
+}
+.step-desc {
+  font-size: 12px;
+  color: var(--muted);
+  line-height: 1.6;
+}
+.step-code {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--mint);
+  margin-top: 8px;
+  padding: 6px 12px;
+  background: rgba(77,255,195,0.05);
+  border-left: 2px solid rgba(77,255,195,0.3);
+  display: inline-block;
+}
+
+/* Stats row */
+.stats-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 2px;
+  margin-top: 2px;
+}
+.stat-box {
+  background: rgba(13,13,32,0.72);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(255,255,255,0.1);
+  padding: 36px 32px;
+  text-align: center;
+  transition: background .3s, border-color .3s;
+}
+.stat-box:hover { background: rgba(15,15,38,0.88); border-color: rgba(77,255,195,0.3); }
+.stat-val {
+  font-family: var(--font-display);
+  font-size: 56px;
+  line-height: 1;
+  color: var(--mint);
+  text-shadow: 0 0 40px rgba(77,255,195,0.5), 0 0 80px rgba(77,255,195,0.2);
+}
+.stat-label { font-size: 16px; color: var(--muted); margin-top: 8px; letter-spacing: 1px; }
+
+/* ── TELEGRAM SECTION ── */
+.tg-grid {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  gap: 2px;
+  margin-top: 64px;
+}
+.cmd-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-top: 24px;
+}
+.cmd-item {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 16px 24px;
+  background: rgba(13,13,32,0.55);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255,255,255,0.08);
+  transition: border-color .3s, background .3s;
+  cursor: none;
+}
+.cmd-item:hover { border-color: rgba(77,255,195,0.2); background: rgba(77,255,195,0.03); }
+.cmd-name { font-family: var(--font-mono); font-size: 17px; color: var(--mint); min-width: 120px; }
+.cmd-arrow { color: var(--border); font-size: 10px; }
+.cmd-desc { font-size: 16px; color: var(--muted); }
+
+.tg-mock {
+  background: rgba(13,13,32,0.72);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(255,255,255,0.1);
+  padding: 32px;
+  transform-style: preserve-3d;
+  transition: transform .12s ease-out;
+}
+.mock-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 20px;
+}
+.mock-avatar {
+  width: 40px; height: 40px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--mint), rgba(77,255,195,0.3));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  flex-shrink: 0;
+}
+.mock-name { font-size: 14px; font-weight: 600; }
+.mock-status { font-size: 11px; color: var(--mint); }
+
+.msg { margin-bottom: 12px; }
+.msg-bot {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--border);
+  border-radius: 2px 12px 12px 12px;
+  padding: 12px 16px;
+  font-size: 12px;
+  line-height: 1.6;
+  max-width: 90%;
+}
+.msg-user {
+  background: rgba(77,255,195,0.1);
+  border: 1px solid rgba(77,255,195,0.2);
+  border-radius: 12px 2px 12px 12px;
+  padding: 12px 16px;
+  font-size: 12px;
+  font-family: var(--font-mono);
+  color: var(--mint);
+  max-width: 60%;
+  margin-left: auto;
+}
+
+/* ── TECH STACK ── */
+.stack-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 2px;
+  margin-top: 64px;
+}
+.stack-item {
+  background: rgba(13,13,32,0.72);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255,255,255,0.1);
+  padding: 36px 24px;
+  text-align: center;
+  transition: all .3s;
+  cursor: none;
+  position: relative;
+  overflow: hidden;
+}
+.stack-item::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 50% 0%, rgba(77,255,195,0.1) 0%, transparent 70%);
+  opacity: 0;
+  transition: opacity .3s;
+}
+.stack-item:hover::before { opacity: 1; }
+.stack-item:hover {
+  border-color: rgba(77,255,195,0.2);
+  transform: translateY(-4px);
+}
+.stack-icon { font-size: 32px; margin-bottom: 16px; }
+.stack-name { font-size: 17px; font-weight: 700; margin-bottom: 6px; }
+.stack-role { font-size: 14px; color: var(--muted); }
+
+/* ── DOWNLOAD SECTION ── */
+.download-box {
+  background: rgba(13,13,32,0.72);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255,255,255,0.12);
+  padding: 80px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 80px;
+  align-items: center;
+  position: relative;
+  overflow: hidden;
+  margin-top: 64px;
+  transform-style: preserve-3d;
+  transition: transform .12s ease-out, border-color .3s;
+  cursor: none;
+}
+.download-box::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at var(--mx,50%) var(--my,50%), rgba(77,255,195,0.05) 0%, transparent 60%);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity .3s;
+}
+.download-box:hover::before { opacity:1; }
+.download-box:hover { border-color: rgba(77,255,195,0.2); }
+
+.download-corner {
+  position: absolute;
+  font-family: var(--font-display);
+  font-size: 180px;
+  color: rgba(77,255,195,0.025);
+  line-height: 1;
+  top: -20px;
+  right: -10px;
+  pointer-events: none;
+  letter-spacing: -10px;
+}
+
+.version-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  padding: 8px 16px;
+  border: 1px solid rgba(77,255,195,0.3);
+  color: var(--mint);
+  margin-bottom: 24px;
+}
+.version-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--mint);
+  animation: pulse-dot 2s infinite;
+}
+@keyframes pulse-dot {
+  0%,100% { opacity:1; transform:scale(1); }
+  50% { opacity:.4; transform:scale(.6); }
+}
+
+.download-title {
+  font-family: var(--font-display);
+  font-size: 56px;
+  letter-spacing: 2px;
+  line-height: .95;
+  margin-bottom: 20px;
+}
+.download-title em { font-style: normal; color: var(--mint); }
+
+.req-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  margin: 24px 0 36px;
+}
+.req-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 13px;
+}
+.req-key { color: var(--muted); font-family: var(--font-mono); font-size: 15px; }
+.req-val { color: var(--text); font-size: 16px; }
+
+/* Changelog terminal */
+.changelog-term {
+  background: rgba(8,8,22,0.65);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255,255,255,0.1);
+  padding: 0;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+.changelog-header {
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.changelog-body {
+  padding: 20px;
+  overflow-y: auto;
+  flex: 1;
+  font-family: var(--font-mono);
+  font-size: 12px;
+}
+.cl-version { color: var(--mint); margin-top: 16px; margin-bottom: 8px; display: flex; align-items: center; gap: 12px; }
+.cl-version:first-child { margin-top: 0; }
+.cl-date { color: var(--muted); font-size: 10px; }
+.cl-plus { color: #5CFF8A; }
+.cl-star { color: var(--lavender); }
+.cl-minus { color: var(--coral); }
+.cl-line { display: flex; align-items: flex-start; gap: 8px; color: var(--muted); margin-bottom: 4px; }
+
+/* ── FOOTER ── */
+footer {
+  border-top: 1px solid var(--border);
+  padding: 60px 48px;
+  position: relative;
+  z-index: 2;
+}
+.footer-inner {
+  max-width: 1400px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.footer-logo {
+  font-family: var(--font-display);
+  font-size: 24px;
+  letter-spacing: 3px;
+  color: var(--mint);
+  opacity: .6;
+}
+.footer-copy {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--muted);
+  letter-spacing: 1px;
+}
+.footer-links { display: flex; gap: 32px; }
+.footer-links a { font-size: 12px; color: var(--muted); text-decoration: none; transition: color .3s; }
+.footer-links a:hover { color: var(--mint); }
+
+/* ── DIVIDER ── */
+.divider {
+  height: 1px;
+  background: var(--border);
+  margin: 0 48px;
+  position: relative;
+  z-index: 2;
+}
+
+/* ── SCROLL HINT ── */
+.scroll-hint {
+  position: absolute;
+  bottom: 40px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  z-index: 10;
+}
+.scroll-line {
+  width: 1px;
+  height: 40px;
+  background: linear-gradient(to bottom, var(--mint), transparent);
+  animation: scroll-anim 2s infinite;
+}
+@keyframes scroll-anim {
+  0% { transform: scaleY(0); transform-origin: top; }
+  50% { transform: scaleY(1); transform-origin: top; }
+  51% { transform: scaleY(1); transform-origin: bottom; }
+  100% { transform: scaleY(0); transform-origin: bottom; }
+}
+.scroll-text {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 3px;
+  color: var(--muted);
+  text-transform: uppercase;
+  writing-mode: vertical-lr;
+  transform: rotate(180deg);
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .hero-content { grid-template-columns: 1fr; }
+  .arch-boxes, .cards-grid-3, .cards-grid-4, .stack-grid { grid-template-columns: 1fr 1fr; }
+  .watchdog-grid, .tg-grid, .download-box { grid-template-columns: 1fr; }
+  .card-wide { grid-column: span 1; }
+  .card-wide .card-3d-inner { grid-template-columns: 1fr; }
+  .stats-row { grid-template-columns: repeat(2,1fr); }
+  nav { padding: 20px 24px; }
+  .nav-links { display: none; }
+  .section { padding: 80px 24px; }
+}
+
+/* Horizontal line decoration */
+.h-line {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--mint), transparent);
+  opacity: .15;
+  margin: 0;
+}
+
+/* ══════════════════════════════════════════════════════
+   BORDER GLOW — ported from React Bits (vanilla JS)
+══════════════════════════════════════════════════════ */
+.bglow > *:not(.edge-light) {
+  position: relative;
+  z-index: 1;
+}
+
+.bglow {
+  --edge-proximity: 0;
+  --cursor-angle: 45deg;
+  --edge-sensitivity: 28;
+  --color-sensitivity: calc(var(--edge-sensitivity) + 20);
+  --cone-spread: 22;
+  --glow-padding: 36px;
+  --fill-opacity: 0.4;
+
+  position: relative;
+  isolation: isolate;
+  transform: translate3d(0,0,0.01px);
+  overflow: visible !important;
+}
+
+.bglow::before,
+.bglow::after,
+.bglow > .edge-light {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  transition: opacity 0.25s ease-out;
+  z-index: -1;
+  pointer-events: none;
+}
+
+.bglow:not(:hover)::before,
+.bglow:not(:hover)::after,
+.bglow:not(:hover) > .edge-light {
+  opacity: 0;
+  transition: opacity 0.75s ease-in-out;
+}
+
+/* mesh-gradient border */
+.bglow::before {
+  border: 1px solid transparent;
+  background:
+    linear-gradient(var(--bglow-bg, #0D0D20) 0 100%) padding-box,
+    linear-gradient(rgb(255 255 255 / 0%) 0% 100%) border-box,
+    var(--g1) border-box,
+    var(--g2) border-box,
+    var(--g3) border-box,
+    var(--g4) border-box,
+    var(--g5) border-box,
+    var(--g6) border-box,
+    var(--g7) border-box,
+    var(--gb) border-box;
+  opacity: calc((var(--edge-proximity) - var(--color-sensitivity)) / (100 - var(--color-sensitivity)));
+  mask-image: conic-gradient(
+    from var(--cursor-angle) at center,
+    black calc(var(--cone-spread) * 1%),
+    transparent calc((var(--cone-spread) + 15) * 1%),
+    transparent calc((100 - var(--cone-spread) - 15) * 1%),
+    black calc((100 - var(--cone-spread)) * 1%)
+  );
+}
+
+/* mesh-gradient fill */
+.bglow::after {
+  background:
+    var(--g1) padding-box, var(--g2) padding-box, var(--g3) padding-box,
+    var(--g4) padding-box, var(--g5) padding-box, var(--g6) padding-box,
+    var(--g7) padding-box, var(--gb) padding-box;
+  mask-image:
+    linear-gradient(to bottom, black, black),
+    radial-gradient(ellipse at 50% 50%, black 40%, transparent 65%),
+    conic-gradient(from var(--cursor-angle) at center, transparent 5%, black 15%, black 85%, transparent 95%);
+  mask-composite: subtract, add;
+  opacity: calc(var(--fill-opacity) * (var(--edge-proximity) - var(--color-sensitivity)) / (100 - var(--color-sensitivity)));
+  mix-blend-mode: soft-light;
+}
+
+/* outer glow */
+.bglow > .edge-light {
+  inset: calc(var(--glow-padding) * -1);
+  z-index: 2;
+  mask-image: conic-gradient(
+    from var(--cursor-angle) at center,
+    black 2.5%, transparent 10%, transparent 90%, black 97.5%
+  );
+  opacity: calc((var(--edge-proximity) - var(--edge-sensitivity)) / (100 - var(--edge-sensitivity)));
+  mix-blend-mode: plus-lighter;
+}
+
+.bglow > .edge-light::before {
+  content: "";
+  position: absolute;
+  inset: var(--glow-padding);
+  border-radius: inherit;
+  box-shadow:
+    inset 0 0 0 1px var(--gc),
+    inset 0 0 3px 0 var(--gc-50),
+    inset 0 0 10px 0 var(--gc-40),
+    inset 0 0 25px 2px var(--gc-20),
+    inset 0 0 50px 2px var(--gc-10),
+    0 0 3px 0 var(--gc-50),
+    0 0 10px 0 var(--gc-40),
+    0 0 25px 2px var(--gc-20),
+    0 0 50px 2px var(--gc-10);
+}
+
+
+/* ══════════════════════════════════════════
+   SCROLL REVEAL ANIMATIONS
+══════════════════════════════════════════ */
+.reveal {
+  opacity: 0;
+  transform: translateY(36px);
+  transition: opacity 0.65s ease, transform 0.65s ease;
+}
+.reveal.reveal-left  { transform: translateX(-40px); }
+.reveal.reveal-right { transform: translateX(40px); }
+.reveal.reveal-scale { transform: scale(0.92); }
+
+.reveal.visible {
+  opacity: 1;
+  transform: none;
+}
+
+/* stagger for grids */
+.reveal-stagger .card-3d:nth-child(1) { transition-delay: 0.00s; }
+.reveal-stagger .card-3d:nth-child(2) { transition-delay: 0.08s; }
+.reveal-stagger .card-3d:nth-child(3) { transition-delay: 0.16s; }
+.reveal-stagger .card-3d:nth-child(4) { transition-delay: 0.24s; }
+.reveal-stagger .card-3d:nth-child(5) { transition-delay: 0.32s; }
+.reveal-stagger .card-3d:nth-child(6) { transition-delay: 0.40s; }
+.reveal-stagger .card-3d:nth-child(7) { transition-delay: 0.48s; }
+.reveal-stagger .card-3d:nth-child(8) { transition-delay: 0.56s; }
+.reveal-stagger .card-3d:nth-child(9) { transition-delay: 0.64s; }
+
+.reveal-stagger .arch-box:nth-child(1) { transition-delay: 0.00s; }
+.reveal-stagger .arch-box:nth-child(2) { transition-delay: 0.12s; }
+.reveal-stagger .arch-box:nth-child(3) { transition-delay: 0.24s; }
+
+.reveal-stagger .stack-item:nth-child(1)  { transition-delay: 0.00s; }
+.reveal-stagger .stack-item:nth-child(2)  { transition-delay: 0.06s; }
+.reveal-stagger .stack-item:nth-child(3)  { transition-delay: 0.12s; }
+.reveal-stagger .stack-item:nth-child(4)  { transition-delay: 0.18s; }
+.reveal-stagger .stack-item:nth-child(5)  { transition-delay: 0.24s; }
+.reveal-stagger .stack-item:nth-child(6)  { transition-delay: 0.30s; }
+.reveal-stagger .stack-item:nth-child(7)  { transition-delay: 0.36s; }
+.reveal-stagger .stack-item:nth-child(8)  { transition-delay: 0.42s; }
+.reveal-stagger .stack-item:nth-child(9)  { transition-delay: 0.48s; }
+.reveal-stagger .stack-item:nth-child(10) { transition-delay: 0.54s; }
+</style>
+</head>
+<body>
+
+<!-- ── GLOBAL BACKGROUND COLOR BLOBS ── -->
+<div id="bg-blobs" aria-hidden="true">
+  <div class="blob blob-1"></div>
+  <div class="blob blob-2"></div>
+  <div class="blob blob-3"></div>
+  <div class="blob blob-4"></div>
+  <div class="blob blob-5"></div>
+  <div class="blob blob-6"></div>
+  <div class="blob blob-7"></div>
+</div>
+
+<div id="cursor"></div>
+<div id="cursor-glow"></div>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">NETGUARDIAN</div>
+  <ul class="nav-links">
+    <li><a href="#architecture">Архітектура</a></li>
+    <li><a href="#features">Функції</a></li>
+    <li><a href="#hardware">Апаратна частина</a></li>
+    <li><a href="#telegram">Telegram</a></li>
+    <li><a href="#download">Завантажити</a></li>
+  </ul>
+  <div class="nav-badge">Beta v1.0.4</div>
+</nav>
+
+<!-- HERO -->
+<section class="hero" id="hero" style="min-height:100vh; padding:100px 48px 60px; align-items:flex-start;">
+  <div style="max-width:1400px; margin:0 auto; width:100%; display:grid; grid-template-columns:1fr 1fr; gap:48px; align-items:start; position:relative; z-index:2;">
+
+    <!-- LEFT COLUMN -->
+    <div>
+      <!-- Diploma card -->
+      <div class="diploma-card">
+        <div class="diploma-top-label">📋 КВАЛІФІКАЦІЙНА РОБОТА · 2026</div>
+        <div class="diploma-rows">
+          <div class="drow"><span class="dk">Університет</span><span class="dv">Київський авіаційний інститут</span></div>
+          <div class="drow"><span class="dk">Кафедра</span><span class="dv">Комп'ютерних систем та мереж</span></div>
+          <div class="drow"><span class="dk">Студент</span><span class="dv dv-name">Вілігоцький Дмитро Сергійович</span></div>
+          <div class="drow"><span class="dk">Група</span><span class="dv dv-mint">Б-123-22-1-КС &nbsp;/&nbsp; КС-431Б</span></div>
+          <div class="drow"><span class="dk">Спеціальність</span><span class="dv">123 «Комп'ютерна інженерія»</span></div>
+          <div class="drow"><span class="dk">Керівник</span><span class="dv">Журавель Сергій</span></div>
+        </div>
+      </div>
+
+      <!-- Thesis title -->
+      <div style="margin-top:28px; margin-bottom:8px; font-family:var(--font-mono); font-size:14px; letter-spacing:3px; color:var(--mint); display:flex; align-items:center; gap:12px;">
+        <span style="width:30px;height:1px;background:var(--mint);display:inline-block;"></span>
+        ТЕМА ДИПЛОМНОЇ РОБОТИ
+      </div>
+      <h1 style="font-family:var(--font-display); font-size:clamp(26px,3vw,42px); line-height:1.15; letter-spacing:1px; color:#fff; margin-bottom:24px;">
+        Інтелектуальна система<br>
+        <span style="color:var(--mint); text-shadow:0 0 40px rgba(77,255,195,0.5);">моніторингу, діагностики</span><br>
+        та автоматичного відновлення<br>
+        локальних мереж на основі AI
+      </h1>
+
+      <div class="hero-tags" style="margin-bottom:28px;">
+        <span class="tag tag-mint">AI-Powered</span>
+        <span class="tag tag-coral">Auto-Healing</span>
+        <span class="tag tag-lav">IoT Watchdog</span>
+        <span class="tag" style="border-color:rgba(255,209,102,0.4);color:var(--gold);background:rgba(255,209,102,0.05);">Python 3.11</span>
+      </div>
+
+      <div class="hero-cta">
+        <button class="btn-primary" onclick="document.getElementById('architecture').scrollIntoView({behavior:'smooth'})">Переглянути систему</button>
+        <button class="btn-secondary" onclick="document.getElementById('download').scrollIntoView({behavior:'smooth'})">Завантажити</button>
+      </div>
+    </div>
+
+    <!-- RIGHT COLUMN -->
+    <div style="display:flex; flex-direction:column; gap:14px;">
+
+      <!-- Purpose -->
+      <div class="info-panel">
+        <div class="info-panel-label">🎯 МЕТА РОБОТИ</div>
+        <p class="info-panel-text">
+          Розробити інтелектуальну програмну систему моніторингу, діагностики та автоматичного відновлення локальних комп'ютерних мереж з використанням технологій штучного інтелекту — для проактивного виявлення мережевих проблем, формування рекомендацій природною мовою та їх автоматичного виправлення.
+        </p>
+      </div>
+
+      <!-- Problems -->
+      <div class="info-panel">
+        <div class="info-panel-label">⚡ ПРОБЛЕМИ, ЯКІ ВИРІШУЄ СИСТЕМА</div>
+        <ul class="problems-list">
+          <li>
+            <span class="prob-num" style="color:var(--coral);">01</span>
+            <div>
+              <div class="prob-title">Складна діагностика для звичайного користувача</div>
+              <div class="prob-desc">Існуючі утиліти показують лише факт збою. NetGuardian локалізує джерело: роутер, провайдер, DNS або сам комп'ютер.</div>
+            </div>
+          </li>
+          <li>
+            <span class="prob-num" style="color:var(--gold);">02</span>
+            <div>
+              <div class="prob-title">Відсутність автоматичного виправлення</div>
+              <div class="prob-desc">35+ сценаріїв Auto-Fix: від очищення DNS-кешу до вимкнення живлення роутера через IoT-розетку.</div>
+            </div>
+          </li>
+          <li>
+            <span class="prob-num" style="color:var(--mint);">03</span>
+            <div>
+              <div class="prob-title">Моніторинг зупиняється разом з ПК</div>
+              <div class="prob-desc">Raspberry Pi Zero 2 W — автономний агент 24/7, запускає watchdog навіть коли основний ПК вимкнений.</div>
+            </div>
+          </li>
+          <li>
+            <span class="prob-num" style="color:var(--lavender);">04</span>
+            <div>
+              <div class="prob-title">AI не інтегрований у мережеву діагностику</div>
+              <div class="prob-desc">Гібридний AI-модуль: Google Gemini онлайн або локальна база знань 200+ сценаріїв офлайн.</div>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="scroll-hint">
+    <div class="scroll-line"></div>
+    <span class="scroll-text">Scroll</span>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ARCHITECTURE -->
+<section class="section" id="architecture">
+  <div class="section-inner">
+    <div class="section-label" data-num="01">Architecture</div>
+    <h2 class="section-title">АРХІТЕКТУРА<br><em>СИСТЕМИ</em></h2>
+    <p class="section-desc">Три незалежних компоненти працюють у синхронізованій системі для 24/7 захисту мережі</p>
+
+    <div class="arch-boxes">
+      <!-- Desktop Agent -->
+      <div class="arch-box" style="--accent-color: var(--mint); cursor:pointer;" id="arch1" onclick="openModal('desktop')">
+        <div class="arch-box-num">01 / 03</div>
+        <div class="arch-box-icon">🖥️</div>
+        <div class="arch-box-title" style="color:var(--mint)">DESKTOP<br>AGENT</div>
+        <div class="arch-box-badge" style="background:rgba(77,255,195,0.08); border:1px solid rgba(77,255,195,0.2); color:var(--mint)">[ CORE BRAIN ]</div>
+        <ul class="arch-box-items" style="color:var(--mint)">
+          <li>Python + Tkinter GUI</li>
+          <li>Gemini AI Integration</li>
+          <li>230+ правил діагностики</li>
+          <li>Auto-Healing Scripts</li>
+          <li>DNS Benchmark</li>
+        </ul>
+        <div style="margin-top:20px; font-family:var(--font-mono); font-size:14px; color:rgba(77,255,195,0.6); letter-spacing:2px;">↗ НАТИСНИ ДЛЯ ДЕТАЛЕЙ</div>
+      </div>
+      <!-- Hardware Probe -->
+      <div class="arch-box" style="--accent-color: var(--coral); cursor:pointer;" id="arch2" onclick="openModal('hardware')">
+        <div class="arch-box-num">02 / 03</div>
+        <div class="arch-box-icon">🔬</div>
+        <div class="arch-box-title" style="color:var(--coral)">HARDWARE<br>PROBE</div>
+        <div class="arch-box-badge" style="background:rgba(255,104,85,0.08); border:1px solid rgba(255,104,85,0.2); color:var(--coral)">[ IOT WATCHDOG ]</div>
+        <ul class="arch-box-items" style="color:var(--coral)">
+          <li>Raspberry Pi Zero 2 W</li>
+          <li>24/7 автономний моніторинг</li>
+          <li>MQTT + SUNROZ USB→RJ45</li>
+          <li>Black Box Logging</li>
+          <li>Local AI (KB + правила)</li>
+        </ul>
+        <div style="margin-top:20px; font-family:var(--font-mono); font-size:14px; color:rgba(255,104,85,0.6); letter-spacing:2px;">↗ НАТИСНИ ДЛЯ ДЕТАЛЕЙ</div>
+      </div>
+      <!-- Telegram Bot -->
+      <div class="arch-box" style="--accent-color: var(--lavender); cursor:pointer;" id="arch3" onclick="openModal('telegram')">
+        <div class="arch-box-num">03 / 03</div>
+        <div class="arch-box-icon">📱</div>
+        <div class="arch-box-title" style="color:var(--lavender)">TELEGRAM<br>BOT</div>
+        <div class="arch-box-badge" style="background:rgba(184,169,255,0.08); border:1px solid rgba(184,169,255,0.2); color:var(--lavender)">[ REMOTE CONTROL ]</div>
+        <ul class="arch-box-items" style="color:var(--lavender)">
+          <li>Мобільне управління</li>
+          <li>Instant Alerts</li>
+          <li>Remote Screenshot</li>
+          <li>Router Power Off</li>
+          <li>ID Whitelist Security</li>
+        </ul>
+        <div style="margin-top:20px; font-family:var(--font-mono); font-size:14px; color:rgba(184,169,255,0.6); letter-spacing:2px;">↗ НАТИСНИ ДЛЯ ДЕТАЛЕЙ</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- FEATURES -->
+<section class="section" id="features">
+  <div class="section-inner">
+    <div class="section-label" data-num="02">Software</div>
+    <h2 class="section-title">ПРОГРАМНІ<br><em>МОЖЛИВОСТІ</em></h2>
+    <p class="section-desc">Комплексний аналіз від фізичного рівня до додатків з автоматичним виправленням</p>
+
+
+    <div class="cards-grid cards-grid-3">
+      <div class="card-3d">
+        <div class="card-3d-inner">
+          <div class="card-num">01</div>
+          <div class="card-icon icon-mint">⚡</div>
+          <div class="card-title">Multi-Layer Diagnostics</div>
+          <div class="card-desc">Одночасно перевіряє зв'язок до роутера, провайдера і Google. Якщо тільки роутер лагає — проблема у вас вдома. Якщо далі — вже провайдер. <span class="card-tech">230+ правил від L1 до L7.</span></div>
+        </div>
+      </div>
+      <div class="card-3d">
+        <div class="card-3d-inner">
+          <div class="card-num">02</div>
+          <div class="card-icon icon-lav">🧠</div>
+          <div class="card-title">Hybrid AI Engine</div>
+          <div class="card-desc">Аналізує дані мережі і пояснює проблему звичайною мовою. Є інтернет — питає Google Gemini. Немає — відповідає з власної бази знань. Завжди дає відповідь. <span class="card-tech">Gemini → KB → Pi AI fallback.</span></div>
+        </div>
+      </div>
+      <div class="card-3d">
+        <div class="card-3d-inner">
+          <div class="card-num">03</div>
+          <div class="card-icon icon-mint">🔧</div>
+          <div class="card-title">Auto-Healing</div>
+          <div class="card-desc">Знайшла проблему — виправила сама, без участі користувача. Очищає DNS, оновлює IP-адресу, відновлює мережеву карту, вимикає живлення роутера. <span class="card-tech">35+ автоматичних сценаріїв.</span></div>
+        </div>
+      </div>
+      <div class="card-3d">
+        <div class="card-3d-inner">
+          <div class="card-num">04</div>
+          <div class="card-icon icon-gold">📡</div>
+          <div class="card-title">DNS Benchmark</div>
+          <div class="card-desc">Перевіряє швидкість 12+ DNS-серверів і встановлює найшвидший. Повільний DNS — одна з найчастіших причин «повільного інтернету», хоча швидкість нормальна. <span class="card-tech">Cloudflare 1.1.1.1 / Google 8.8.8.8 / DoH.</span></div>
+        </div>
+      </div>
+      <div class="card-3d">
+        <div class="card-3d-inner">
+          <div class="card-num">05</div>
+          <div class="card-icon icon-coral">🎮</div>
+          <div class="card-title">Game Mode</div>
+          <div class="card-desc">Під час гри зупиняє фонові оновлення Windows і торренти, що «крадуть» канал. Налаштовує пріоритет ігрового трафіку. <span class="card-tech">QoS, MTU tuning, TCP Nagle off.</span></div>
+        </div>
+      </div>
+      <div class="card-3d">
+        <div class="card-3d-inner">
+          <div class="card-num">06</div>
+          <div class="card-icon icon-lav">🛡️</div>
+          <div class="card-title">LAN Security</div>
+          <div class="card-desc">Показує всі пристрої у вашій мережі. Якщо з'явився чужий — сповіщення одразу в Telegram. Визначає виробника за MAC-адресою. <span class="card-tech">ARP-скан, OUI lookup, whitelist.</span></div>
+        </div>
+      </div>
+      <div class="card-3d">
+        <div class="card-3d-inner">
+          <div class="card-num">07</div>
+          <div class="card-icon icon-mint">📈</div>
+          <div class="card-title">Internet Weather</div>
+          <div class="card-desc">Записує якість інтернету кожну хвилину і будує «погоду» за тиждень. Видно коли провайдер найгірший і чи виконує він свої обіцянки щодо швидкості. <span class="card-tech">SLA, heatmap, anomaly detection.</span></div>
+        </div>
+      </div>
+      <div class="card-3d">
+        <div class="card-3d-inner">
+          <div class="card-num">08</div>
+          <div class="card-icon icon-coral">🌐</div>
+          <div class="card-title">Auto-VPN</div>
+          <div class="card-desc">Керує VPN-підключенням і захищає від «витоку» трафіку. Якщо VPN несподівано відключається — блокує інтернет до відновлення. <span class="card-tech">Radmin/OpenVPN/WireGuard, Kill Switch.</span></div>
+        </div>
+      </div>
+      <div class="card-3d">
+        <div class="card-3d-inner">
+          <div class="card-num">09</div>
+          <div class="card-icon icon-gold">⚡</div>
+          <div class="card-title">Voltage Guardian</div>
+          <div class="card-desc">Слідкує за напругою в розетці роутера. Якщо напруга впала або стрибнула — автоматично відключає живлення і вмикає знову. Захищає від пошкодження обладнання. <span class="card-tech">Tapo P110, V&lt;190V або V&gt;250V → auto power-off.</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- HARDWARE / WATCHDOG -->
+<section class="section" id="hardware">
+  <div class="section-inner">
+    <div class="section-label" data-num="03">Hardware</div>
+    <h2 class="section-title">WATCHDOG<br><em>АЛГОРИТМ</em></h2>
+    <p class="section-desc">Фізичний hard-reset роутера без участі користувача. Автономна робота коли ПК вимкнений.</p>
+
+    <div class="watchdog-grid">
+      <div class="watchdog-visual" id="watchdogVis">
+        <div style="font-family:var(--font-mono); font-size:13px; color:var(--muted); letter-spacing:3px; margin-bottom:28px; text-transform:uppercase;">Апаратні компоненти</div>
+        <div style="display:flex; flex-direction:column; gap:20px;">
+
+          <div style="display:flex; align-items:flex-start; gap:20px; padding:22px; border:1px solid var(--border); background:rgba(0,0,0,0.3);">
+            <div style="font-size:32px; flex-shrink:0;">🍓</div>
+            <div>
+              <div style="font-size:20px; font-weight:700; margin-bottom:8px;">Raspberry Pi Zero 2 W</div>
+              <div style="font-size:15px; color:#ccc; line-height:1.7; margin-bottom:8px;">Маленький комп'ютер розміром з кредитну картку. Стоїть біля роутера і стежить за інтернетом цілодобово — навіть коли основний ПК вимкнений.</div>
+              <div style="font-size:16px; color:var(--muted); line-height:1.6;">RP3A0-AU, Cortex-A53, 1.0 GHz, 512MB LPDDR2 · Wi-Fi 2.4GHz + BT 4.2</div>
+              <div style="font-family:var(--font-mono); font-size:15px; color:var(--coral); margin-top:6px;">65 × 30 мм · ~0.4–2 Вт · $15–20</div>
+            </div>
+          </div>
+
+          <div style="display:flex; align-items:flex-start; gap:20px; padding:22px; border:1px solid var(--border); background:rgba(0,0,0,0.3);">
+            <div style="font-size:32px; flex-shrink:0;">🔌</div>
+            <div>
+              <div style="font-size:20px; font-weight:700; margin-bottom:8px;">TP-Link Tapo P110</div>
+              <div style="font-size:15px; color:#ccc; line-height:1.7; margin-bottom:8px;">Розумна розетка між звичайною розеткою і роутером. Вимірює напругу та потужність, а при необхідності — відключає живлення за командою від Pi. <em style="color:var(--gold); font-style:normal;">Після оновлення прошивки 2024 — тільки вимкнення, без авто-ввімкнення.</em></div>
+              <div style="font-size:16px; color:var(--muted);">Local REST API · 16A · ±1% точність вимірювань</div>
+              <div style="font-family:var(--font-mono); font-size:15px; color:var(--mint); margin-top:6px;">Voltage · Current · Power · Stability</div>
+            </div>
+          </div>
+
+          <div style="display:flex; align-items:flex-start; gap:20px; padding:22px; border:1px solid var(--border); background:rgba(0,0,0,0.3);">
+            <div style="font-size:32px; flex-shrink:0;">🌐</div>
+            <div>
+              <div style="font-size:20px; font-weight:700; margin-bottom:8px;">D-Link DIR-820</div>
+              <div style="font-size:15px; color:#ccc; line-height:1.7; margin-bottom:8px;">Домашній маршрутизатор — центральний вузол всієї системи. До нього підключені і Pi, і Tapo P110.</div>
+              <div style="font-size:16px; color:var(--muted);">MediaTek MT7628DAN, 575 МГц · 64MB RAM · 3× Fast Ethernet</div>
+              <div style="font-family:var(--font-mono); font-size:15px; color:var(--lavender); margin-top:6px;">Gateway: 192.168.0.1</div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="watchdog-steps">
+        <div style="font-family:var(--font-mono); font-size:13px; color:var(--muted); letter-spacing:3px; margin-bottom:16px; text-transform:uppercase;">Алгоритм Watchdog</div>
+
+        <div class="step-item">
+          <div class="step-num">01</div>
+          <div class="step-content">
+            <div class="step-title" style="color:var(--mint)">Безперервне спостереження</div>
+            <div class="step-desc">Pi кожні 30 секунд перевіряє чи доступний інтернет — надсилає сигнал на Google і Cloudflare. Якщо відповідь прийшла — все добре. Паралельно передає дані на основний ПК.</div>
+            <div class="step-code">ping_interval = 30s | hosts = [8.8.8.8, 1.1.1.1]</div>
+          </div>
+        </div>
+
+        <div class="step-item">
+          <div class="step-num">02</div>
+          <div class="step-content">
+            <div class="step-title" style="color:var(--gold)">Виявлення збою</div>
+            <div class="step-desc">Якщо 10 перевірок поспіль не отримали відповіді — це вже 5 хвилин без інтернету. Система вирішує що роутер завис і треба вжити заходів.</div>
+            <div class="step-code">if failed_pings >= 10: trigger_power_off()</div>
+          </div>
+        </div>
+
+        <div class="step-item">
+          <div class="step-num">03</div>
+          <div class="step-content">
+            <div class="step-title" style="color:var(--coral)">Вимкнення живлення через Tapo</div>
+            <div class="step-desc">Pi надсилає команду розетці Tapo по локальній мережі — без інтернету. Tapo відключає живлення роутера. Після цього роутер потрібно ввімкнути вручну або через команду в Telegram.</div>
+            <div class="step-code">POST /api/device {"state":"off"}  ← тільки вимкнення</div>
+          </div>
+        </div>
+
+        <div class="step-item">
+          <div class="step-num">04</div>
+          <div class="step-content">
+            <div class="step-title" style="color:var(--lavender)">Сповіщення в Telegram</div>
+            <div class="step-desc">Одразу після вимкнення — повідомлення в Telegram з інформацією скільки часу роутер не відповідав. Ви дізнаєтесь про це де б не були.</div>
+            <div class="step-code">telegram.send("⚡ Power OFF | downtime: {t}s")</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="stats-row">
+      <div class="stat-box">
+        <div class="stat-val">230+</div>
+        <div class="stat-label">Правил діагностики</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-val">35+</div>
+        <div class="stat-label">Auto-Fix дій</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-val">24/7</div>
+        <div class="stat-label">Автономний моніторинг</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-val">3</div>
+        <div class="stat-label">Рівні AI fallback</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- TELEGRAM -->
+<section class="section" id="telegram">
+  <div class="section-inner">
+    <div class="section-label" data-num="04">Remote Control</div>
+    <h2 class="section-title">TELEGRAM<br><em>ІНТЕГРАЦІЯ</em></h2>
+    <p class="section-desc">Мобільне управління без окремого додатку. Моніторинг у кишені.<br>
+  <a href="https://t.me/NetGuardianAlert_bot" target="_blank" style="display:inline-flex; align-items:center; gap:8px; margin-top:12px; color:var(--lavender); font-family:var(--font-mono); font-size:14px; letter-spacing:1px; text-decoration:none; border:1px solid rgba(184,169,255,0.3); padding:8px 18px; transition:all .3s;"
+     onmouseover="this.style.background='rgba(184,169,255,0.1)'; this.style.borderColor='rgba(184,169,255,0.6)'"
+     onmouseout="this.style.background='transparent'; this.style.borderColor='rgba(184,169,255,0.3)'">
+    📱 Відкрити @NetGuardianAlert_bot
+  </a></p>
+
+    <div class="tg-grid">
+      <div>
+        <ul class="cmd-list">
+          <li class="cmd-item"><span class="cmd-name">/status</span><span class="cmd-arrow">→</span><span class="cmd-desc">Поточний стан мережі: ping, speed, uptime</span></li>
+          <li class="cmd-item"><span class="cmd-name">/reboot</span><span class="cmd-arrow">→</span><span class="cmd-desc">Вимкнення живлення роутера через Tapo</span></li>
+          <li class="cmd-item"><span class="cmd-name">/screen</span><span class="cmd-arrow">→</span><span class="cmd-desc">Скріншот робочого столу ПК</span></li>
+          <li class="cmd-item"><span class="cmd-name">/flushdns</span><span class="cmd-arrow">→</span><span class="cmd-desc">Очистити DNS кеш</span></li>
+          <li class="cmd-item"><span class="cmd-name">/diag</span><span class="cmd-arrow">→</span><span class="cmd-desc">Запустити швидку діагностику мережі</span></li>
+          <li class="cmd-item"><span class="cmd-name">/daily</span><span class="cmd-arrow">→</span><span class="cmd-desc">Добовий звіт з Pi-агента</span></li>
+          <li class="cmd-item"><span class="cmd-name">/pi</span><span class="cmd-arrow">→</span><span class="cmd-desc">Стан Raspberry Pi і кількість записів</span></li>
+        </ul>
+        <div style="margin-top:24px; padding:20px; border:1px solid rgba(184,169,255,0.2); background:rgba(184,169,255,0.04);">
+          <div style="font-size:13px; font-weight:600; color:var(--lavender); margin-bottom:8px;">🔐 ID-Auth захист</div>
+          <div style="font-size:12px; color:var(--muted); line-height:1.7;">Бот відповідає тільки твоєму Telegram ID. Критичні команди потребують підтвердження. Всі дії логуються.</div>
+        </div>
+      </div>
+
+      <div class="tg-mock" id="tgMock">
+        <div class="mock-header">
+          <div class="mock-avatar">🤖</div>
+          <div>
+            <div class="mock-name">NetGuardian Bot</div>
+            <div class="mock-status">● online</div>
+          </div>
+        </div>
+        <div class="msg"><div class="msg-user">/status</div></div>
+        <div class="msg">
+          <div class="msg-bot">
+            📊 <strong>Статус мережі</strong><br>
+            <span style="color:var(--mint)">✓</span> Ping: 14ms · Jitter: 2ms<br>
+            <span style="color:var(--mint)">✓</span> Pi-агент: online (18,432 записів)<br>
+            <span style="color:var(--gold)">⚡</span> Tapo: 221.3V · 7.2W · 99.1%<br>
+            <span style="color:var(--mint)">✓</span> ISP SLA тижень: 99.7%
+          </div>
+        </div>
+        <div class="msg"><div class="msg-user">/reboot</div></div>
+        <div class="msg">
+          <div class="msg-bot">
+            ⚠️ Підтвердити вимкнення живлення роутера?<br>
+            <span style="color:var(--gold)">Downtime ~60 секунд</span>
+          </div>
+        </div>
+        <div class="msg"><div class="msg-user">Так</div></div>
+        <div class="msg">
+          <div class="msg-bot">
+            <span style="color:var(--mint)">✅</span> Power OFF виконано!<br>
+            <span style="color:var(--muted); font-size:11px;">Downtime: 58s · 221.1V stable</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- TECH STACK -->
+<section class="section" id="stack">
+  <div class="section-inner">
+    <div class="section-label" data-num="05">Stack</div>
+    <h2 class="section-title">ТЕХНІЧНИЙ<br><em>СТЕК</em></h2>
+    <p class="section-desc">Сучасні технології для надійного рішення</p>
+
+    <div class="stack-grid">
+      <div class="stack-item">
+        <div class="stack-icon">🐍</div>
+        <div class="stack-name">Python 3.11</div>
+        <div class="stack-role">Core Language</div>
+      </div>
+      <div class="stack-item">
+        <div class="stack-icon">🪟</div>
+        <div class="stack-name">Tkinter</div>
+        <div class="stack-role">Desktop UI</div>
+      </div>
+      <div class="stack-item">
+        <div class="stack-icon">🤖</div>
+        <div class="stack-name">Gemini API</div>
+        <div class="stack-role">AI Engine</div>
+      </div>
+      <div class="stack-item">
+        <div class="stack-icon">📡</div>
+        <div class="stack-name">MQTT/paho</div>
+        <div class="stack-role">IoT Transport</div>
+      </div>
+      <div class="stack-item">
+        <div class="stack-icon">📱</div>
+        <div class="stack-name">Telegram Bot</div>
+        <div class="stack-role">Remote Control</div>
+      </div>
+      <div class="stack-item">
+        <div class="stack-icon">🗄️</div>
+        <div class="stack-name">SQLite</div>
+        <div class="stack-role">Data Storage</div>
+      </div>
+      <div class="stack-item">
+        <div class="stack-icon">🔌</div>
+        <div class="stack-name">Tapo Local API</div>
+        <div class="stack-role">IoT Control</div>
+      </div>
+      <div class="stack-item">
+        <div class="stack-icon">🌐</div>
+        <div class="stack-name">pywifi / scapy</div>
+        <div class="stack-role">Network Layer</div>
+      </div>
+      <div class="stack-item">
+        <div class="stack-icon">🍓</div>
+        <div class="stack-name">Raspberry Pi OS</div>
+        <div class="stack-role">Agent Platform</div>
+      </div>
+      <div class="stack-item">
+        <div class="stack-icon">📦</div>
+        <div class="stack-name">PyInstaller</div>
+        <div class="stack-role">Distribution</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- DOWNLOAD -->
+<section class="section" id="download">
+  <div class="section-inner">
+    <div class="section-label" data-num="06">Download</div>
+    <h2 class="section-title">ЗАВАНТАЖИТИ<br><em>NETGUARDIAN</em></h2>
+
+    <div class="download-box" id="dlBox">
+      <div class="download-corner">v1.0</div>
+      <div>
+        <div class="version-badge">
+          <div class="version-dot"></div>
+          Beta v1.0.4 · Stable Build
+        </div>
+        <h3 class="download-title">DESKTOP<br><em>AGENT</em></h3>
+        <ul class="req-list">
+          <li class="req-item"><span class="req-key">OS</span><span class="req-val">Windows 10/11, Linux</span></li>
+          <li class="req-item"><span class="req-key">Python</span><span class="req-val">3.10 або новіша</span></li>
+          <li class="req-item"><span class="req-key">RAM</span><span class="req-val">Мінімум 2 GB</span></li>
+          <li class="req-item"><span class="req-key">Disk</span><span class="req-val">150 MB вільного місця</span></li>
+          <li class="req-item"><span class="req-key">Network</span><span class="req-val">Ethernet / Wi-Fi</span></li>
+          <li class="req-item"><span class="req-key">Size</span><span class="req-val">24.5 MB</span></li>
+        </ul>
+        <a href="NetGuardian_v1.0.4.exe" download="NetGuardian_v1.0.4.exe" id="dlBtn" class="btn-primary" style="width:100%; display:flex; align-items:center; justify-content:center; gap:10px; text-decoration:none;">
+  ▼ &nbsp; Завантажити NetGuardian &nbsp;<span style="font-size:10px; opacity:.6;">(24.5 MB .exe)</span>
+</a>
+        <p style="font-family:var(--font-mono); font-size:10px; color:var(--muted); margin-top:12px; letter-spacing:1px;">🔒 БЕЗПЕЧНЕ ЗАВАНТАЖЕННЯ · БЕЗ РЕКЛАМИ</p>
+      </div>
+
+      <div class="changelog-term">
+        <div class="changelog-header">
+          <div class="dot dot-r"></div>
+          <div class="dot dot-y"></div>
+          <div class="dot dot-g"></div>
+          <span class="term-title" style="margin-left:8px">changelog.txt</span>
+        </div>
+        <div class="changelog-body">
+          <div class="cl-version"><span>v1.0.4</span><span class="cl-date">2026-01-28</span></div>
+          <div class="cl-line"><span class="cl-plus">+</span><span>Added Raspberry Pi Zero 2 W support</span></div>
+          <div class="cl-line"><span class="cl-plus">+</span><span>TP-Link Tapo P110 Local API integration</span></div>
+          <div class="cl-line"><span class="cl-plus">+</span><span>Voltage Guardian energy monitoring</span></div>
+          <div class="cl-line"><span class="cl-star">*</span><span>Improved AI log interpretation accuracy</span></div>
+          <div class="cl-line"><span class="cl-minus">-</span><span>Fixed DNS leak on VPN switch</span></div>
+          <div style="height:1px; background:var(--border); margin:12px 0;"></div>
+          <div class="cl-version"><span style="color:var(--gold)">v1.0.3</span><span class="cl-date">2026-01-15</span></div>
+          <div class="cl-line"><span class="cl-plus">+</span><span>Telegram bot remote screenshot</span></div>
+          <div class="cl-line"><span class="cl-star">*</span><span>Enhanced game mode optimizer</span></div>
+          <div class="cl-line"><span class="cl-minus">-</span><span>Fixed ping calculation overflow</span></div>
+          <div style="height:1px; background:var(--border); margin:12px 0;"></div>
+          <div class="cl-version"><span style="color:var(--gold)">v1.0.2</span><span class="cl-date">2025-12-20</span></div>
+          <div class="cl-line"><span class="cl-plus">+</span><span>LAN Security Audit module</span></div>
+          <div class="cl-line"><span class="cl-plus">+</span><span>Link Speed Monitor</span></div>
+          <div class="cl-line"><span class="cl-star">*</span><span>UI dark theme improvements</span></div>
+          <div style="height:1px; background:var(--border); margin:12px 0;"></div>
+          <div class="cl-version"><span style="color:var(--muted)">v1.0.1</span><span class="cl-date">2025-12-01</span></div>
+          <div class="cl-line"><span class="cl-plus">+</span><span>Initial public beta release</span></div>
+          <div class="cl-line"><span class="cl-plus">+</span><span>Core diagnostics engine (L1–L7)</span></div>
+          <div class="cl-line"><span class="cl-plus">+</span><span>LLM log humanizer integration</span></div>
+          <div style="height:16px;"></div>
+          <div style="color:var(--muted); font-size:10px;"><span class="cl-plus">+</span> Added &nbsp; <span class="cl-star">*</span> Changed &nbsp; <span class="cl-minus">-</span> Fixed</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-logo">NETGUARDIAN</div>
+    <div class="footer-links">
+      <a href="#architecture">Архітектура</a>
+      <a href="#hardware">Hardware</a>
+      <a href="#telegram">Telegram</a>
+      <a href="#download">Download</a>
+      <a href="https://t.me/NetGuardianAlert_bot" target="_blank" style="color:var(--lavender); border:1px solid rgba(184,169,255,0.3); padding:6px 14px; font-size:12px; letter-spacing:1px;">📱 @NetGuardianAlert_bot</a>
+    </div>
+    <div class="footer-copy" style="font-size:14px;">© 2026 NetGuardian · Дипломний проект · Вілігоцький Д.С.</div>
+  </div>
+</footer>
+
+<!-- Download modal overlay -->
+<div id="dlOverlay" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.9); backdrop-filter:blur(20px); z-index:999; align-items:center; justify-content:center;">
+  <div style="background:var(--card); border:1px solid rgba(77,255,195,0.3); padding:48px; max-width:480px; width:90%; position:relative;">
+    <div style="font-family:var(--font-mono); font-size:14px; letter-spacing:3px; color:var(--muted); margin-bottom:24px;">DOWNLOAD IN PROGRESS</div>
+    <div style="font-family:var(--font-display); font-size:36px; letter-spacing:2px; margin-bottom:32px;">NetGuardian<br><span style="color:var(--mint)">Desktop Agent</span></div>
+    <div style="background:rgba(0,0,0,0.5); height:4px; border-radius:2px; overflow:hidden; margin-bottom:12px;">
+      <div id="dlProg" style="height:100%; width:0%; background:linear-gradient(90deg,var(--mint),#00d9ff); transition:width .4s;"></div>
+    </div>
+    <div style="display:flex; justify-content:space-between; font-family:var(--font-mono); font-size:11px; color:var(--muted); margin-bottom:24px;">
+      <span id="dlStatus">Initializing...</span>
+      <span id="dlPct" style="color:var(--mint)">0%</span>
+    </div>
+    <div id="dlLog" style="background:rgba(0,0,0,0.6); padding:16px; font-family:var(--font-mono); font-size:11px; height:120px; overflow-y:auto; border:1px solid var(--border);"></div>
+    <button id="dlClose" style="display:none; margin-top:24px; width:100%;" class="btn-primary">✓ &nbsp; Готово</button>
+  </div>
+</div>
+
+<script>// @ts-nocheck
+// ── CURSOR ──
+const cursor = document.getElementById('cursor');
+const cursorGlow = document.getElementById('cursor-glow');
+let mx = 0, my = 0;
+
+document.addEventListener('mousemove', e => {
+  mx = e.clientX; my = e.clientY;
+  cursor.style.left = mx + 'px';
+  cursor.style.top = my + 'px';
+  cursorGlow.style.left = mx + 'px';
+  cursorGlow.style.top = my + 'px';
+});
+
+document.addEventListener('mousedown', () => {
+  cursor.style.width = '20px';
+  cursor.style.height = '20px';
+  cursor.style.background = '#fff';
+});
+document.addEventListener('mouseup', () => {
+  cursor.style.width = '12px';
+  cursor.style.height = '12px';
+  cursor.style.background = 'var(--mint)';
+});
+
+// ── 3D TILT EFFECT ──
+function initTilt(selector, maxTilt = 12) {
+  document.querySelectorAll(selector).forEach(el => {
+    el.addEventListener('mousemove', e => {
+      const r = el.getBoundingClientRect();
+      const x = (e.clientX - r.left) / r.width;
+      const y = (e.clientY - r.top) / r.height;
+      const tx = (x - .5) * maxTilt * 2;
+      const ty = (y - .5) * -maxTilt * 2;
+      el.style.transform = `perspective(800px) rotateY(${tx}deg) rotateX(${ty}deg) scale3d(1.02,1.02,1.02)`;
+      // Update radial gradient position
+      el.style.setProperty('--mx', (x*100) + '%');
+      el.style.setProperty('--my', (y*100) + '%');
+    });
+    el.addEventListener('mouseleave', () => {
+      el.style.transform = '';
+    });
+  });
+}
+
+function initTiltArch(selector, maxTilt = 8) {
+  document.querySelectorAll(selector).forEach(el => {
+    el.addEventListener('mousemove', e => {
+      const r = el.getBoundingClientRect();
+      const x = (e.clientX - r.left) / r.width;
+      const y = (e.clientY - r.top) / r.height;
+      const tx = (x - .5) * maxTilt * 2;
+      const ty = (y - .5) * -maxTilt * 2;
+      el.style.transform = `perspective(1200px) rotateY(${tx}deg) rotateX(${ty}deg)`;
+    });
+    el.addEventListener('mouseleave', () => {
+      el.style.transform = '';
+    });
+  });
+}
+
+function initTiltBox(el, maxTilt = 6) {
+  el.addEventListener('mousemove', e => {
+    const r = el.getBoundingClientRect();
+    const x = (e.clientX - r.left) / r.width;
+    const y = (e.clientY - r.top) / r.height;
+    const tx = (x - .5) * maxTilt * 2;
+    const ty = (y - .5) * -maxTilt * 2;
+    el.style.transform = `perspective(1200px) rotateY(${tx}deg) rotateX(${ty}deg)`;
+    el.style.setProperty('--mx', (x*100)+'%');
+    el.style.setProperty('--my', (y*100)+'%');
+  });
+  el.addEventListener('mouseleave', () => {
+    el.style.transform = '';
+  });
+}
+
+initTilt('.card-3d-inner');
+initTiltArch('.arch-box');
+
+const heroTerm = document.getElementById('heroTerm');
+if (heroTerm) {
+  heroTerm.addEventListener('mousemove', e => {
+    const r = heroTerm.getBoundingClientRect();
+    const x = (e.clientX - r.left) / r.width;
+    const y = (e.clientY - r.top) / r.height;
+    const tx = (x-.5)*14;
+    const ty = (y-.5)*-14;
+    heroTerm.style.transform = `perspective(1000px) rotateY(${tx}deg) rotateX(${ty}deg) scale3d(1.02,1.02,1.02)`;
+  });
+  heroTerm.addEventListener('mouseleave', () => {
+    heroTerm.style.transform = '';
+  });
+}
+
+const tgMock = document.getElementById('tgMock');
+if (tgMock) {
+  tgMock.addEventListener('mousemove', e => {
+    const r = tgMock.getBoundingClientRect();
+    const x = (e.clientX - r.left) / r.width;
+    const y = (e.clientY - r.top) / r.height;
+    tgMock.style.transform = `perspective(800px) rotateY(${(x-.5)*12}deg) rotateX(${(y-.5)*-12}deg) scale3d(1.01,1.01,1.01)`;
+  });
+  tgMock.addEventListener('mouseleave', () => tgMock.style.transform = '');
+}
+
+const dlBox = document.getElementById('dlBox');
+if (dlBox) initTiltBox(dlBox, 5);
+
+const wVis = document.getElementById('watchdogVis');
+if (wVis) initTiltBox(wVis, 6);
+
+// ── SCROLL REVEAL ──
+const revealEls = document.querySelectorAll('.card-3d, .arch-box, .stat-box, .stack-item, .cmd-item, .step-item');
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.style.opacity = '1';
+      e.target.style.transform = e.target.style.transform || 'none';
+      e.target.style.transition = 'opacity .6s ease, transform .6s ease';
+    }
+  });
+}, { threshold: .1 });
+
+revealEls.forEach((el, i) => {
+  el.style.opacity = '0';
+  el.style.transform = 'translateY(20px)';
+  el.style.transition = `opacity .6s ease ${i*0.04}s, transform .6s ease ${i*0.04}s`;
+  observer.observe(el);
+});
+
+// ── DOWNLOAD MODAL ──
+const dlBtn = document.getElementById('dlBtn');
+const dlOverlay = document.getElementById('dlOverlay');
+const dlClose = document.getElementById('dlClose');
+const dlProg = document.getElementById('dlProg');
+const dlStatus = document.getElementById('dlStatus');
+const dlPct = document.getElementById('dlPct');
+const dlLog = document.getElementById('dlLog');
+
+const steps = [
+  { p:10, s:'Підключення до CDN...', l:'> Connecting to cdn.netguardian.io' },
+  { p:22, s:'SSL handshake...', l:'> SSL/TLS established ✓' },
+  { p:38, s:'Завантаження основного модуля...', l:'> Downloading netguardian-core.exe' },
+  { p:55, s:'AI компоненти (Gemini adapter)...', l:'> Downloading ai-modules.dll' },
+  { p:68, s:'IoT драйвери (Tapo + MQTT)...', l:'> Downloading iot-drivers.pak' },
+  { p:80, s:'База знань (230+ правил)...', l:'> Downloading knowledge_base.db' },
+  { p:92, s:'Перевірка SHA-256...', l:'> Verifying checksums... OK ✓' },
+  { p:100, s:'Завершено!', l:'> ✓ Download complete! (24.5 MB)' },
+];
+
+// dlBtn download handled above
+
+dlClose.addEventListener('click', () => dlOverlay.style.display = 'none');
+// Trigger download on dlBtn click (animation plays, then file downloads)
+document.getElementById('dlBtn').addEventListener('click', function(e) {
+  // Show animation modal
+  dlOverlay.style.display = 'flex';
+  dlLog.innerHTML = '';
+  dlProg.style.width = '0%';
+  dlPct.textContent = '0%';
+  dlClose.style.display = 'none';
+  let i = 0;
+  const run2 = () => {
+    if (i >= steps.length) {
+      dlClose.style.display = 'block';
+      return;
+    }
+    const s = steps[i++];
+    dlProg.style.width = s.p + '%';
+    dlPct.textContent = s.p + '%';
+    dlStatus.textContent = s.s;
+    const line = document.createElement('div');
+    line.style.color = s.p === 100 ? 'var(--mint)' : 'var(--muted)';
+    line.textContent = s.l;
+    dlLog.appendChild(line);
+    dlLog.scrollTop = dlLog.scrollHeight;
+    setTimeout(run2, i < 4 ? 380 : 480);
+  };
+  setTimeout(run2, 400);
+});
+dlOverlay.addEventListener('click', e => { if (e.target === dlOverlay && dlClose.style.display === 'block') dlOverlay.style.display = 'none'; });
+</script>
+<!-- ══════════════════════════════════════════════════════════════
+     DETAIL MODALS — Desktop Agent / Hardware Probe / Telegram Bot
+════════════════════════════════════════════════════════════════ -->
+<div id="detailOverlay" style="
+  display:none; position:fixed; inset:0;
+  background:#06061A;
+  z-index:500; overflow-y:auto;">
+
+  <!-- Animated background canvas -->
+  <canvas id="modalBg" style="position:fixed;inset:0;pointer-events:none;z-index:0;opacity:0.7;"></canvas>
+
+  <!-- Floating accent orbs — big and bright -->
+  <div id="modalOrbs" style="position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden;">
+    <div class="morb morb1"></div>
+    <div class="morb morb2"></div>
+    <div class="morb morb3"></div>
+    <div class="morb morb4"></div>
+    <div class="morb morb5"></div>
+  </div>
+
+  <!-- Close button -->
+  <button onclick="closeModal()" style="
+    position:fixed; top:24px; right:32px;
+    background:transparent; border:1px solid rgba(255,255,255,0.1);
+    color:var(--muted); font-family:var(--font-mono); font-size:11px;
+    letter-spacing:2px; padding:10px 20px; cursor:pointer; z-index:600;
+    transition:all .3s;"
+    onmouseover="this.style.borderColor='var(--mint)';this.style.color='var(--mint)'"
+    onmouseout="this.style.borderColor='rgba(255,255,255,0.1)';this.style.color='var(--muted)'">
+    ✕ &nbsp; ESC / ЗАКРИТИ
+  </button>
+
+  <div id="detailContent" style="max-width:1200px; margin:0 auto; padding:80px 48px 120px; position:relative; z-index:2;">
+    <!-- filled by JS -->
+  </div>
+</div>
+
+<style>
+/* ── MODAL BACKGROUND ORBS ── */
+.morb {
+  position:absolute;
+  border-radius:50%;
+  filter:blur(80px);
+  animation: orbDrift 12s ease-in-out infinite alternate;
+}
+.morb { filter:blur(65px); will-change:transform; }
+.morb1 { width:800px;height:800px; top:-200px; left:-200px; background:rgba(77,255,195,0.28); animation-duration:16s; }
+.morb2 { width:700px;height:700px; bottom:-180px; right:-180px; background:rgba(255,104,85,0.22); animation-duration:20s; animation-delay:-7s; }
+.morb3 { width:550px;height:550px; top:30%; left:45%; background:rgba(184,169,255,0.20); animation-duration:18s; animation-delay:-4s; }
+.morb4 { width:450px;height:450px; top:55%; left:0%; background:rgba(255,209,102,0.18); animation-duration:24s; animation-delay:-12s; }
+.morb5 { width:380px;height:380px; top:5%; right:5%; background:rgba(0,217,255,0.18); animation-duration:14s; animation-delay:-9s; }
+@keyframes orbDrift {
+  0%   { transform: translate(0,0) scale(1); }
+  30%  { transform: translate(70px,-50px) scale(1.12); }
+  65%  { transform: translate(-40px,80px) scale(0.91); }
+  100% { transform: translate(-60px,-60px) scale(1.06); }
+}
+
+/* ── MODAL INTERNALS ── */
+.modal-hero { margin-bottom: 64px; }
+.modal-label { font-family:var(--font-mono); font-size:11px; letter-spacing:4px; color:var(--muted); display:flex; align-items:center; gap:16px; margin-bottom:16px; }
+.modal-label::before { content:attr(data-prefix); color:var(--accent); }
+.modal-title { font-family:var(--font-display); font-size:clamp(56px,8vw,100px); line-height:.9; letter-spacing:2px; }
+.modal-title span { color:var(--accent); text-shadow: 0 0 60px var(--accent), 0 0 120px rgba(77,255,195,0.2); }
+.modal-sub { font-size:18px; color:var(--muted); max-width:680px; line-height:1.8; margin-top:20px; }
+
+/* Card reveal animation */
+@keyframes cardReveal {
+  from { opacity:0; transform: translateY(28px); }
+  to   { opacity:1; transform: translateY(0); }
+}
+.mbox { animation: cardReveal .5s ease both; }
+.modal-grid-2 .mbox:nth-child(1) { animation-delay: .05s; }
+.modal-grid-2 .mbox:nth-child(2) { animation-delay: .12s; }
+.modal-grid-2 .mbox:nth-child(3) { animation-delay: .19s; }
+.modal-grid-2 .mbox:nth-child(4) { animation-delay: .26s; }
+.modal-grid-2 .mbox:nth-child(5) { animation-delay: .33s; }
+.modal-grid-2 .mbox:nth-child(6) { animation-delay: .40s; }
+.modal-grid-3 .mbox:nth-child(1) { animation-delay: .05s; }
+.modal-grid-3 .mbox:nth-child(2) { animation-delay: .12s; }
+.modal-grid-3 .mbox:nth-child(3) { animation-delay: .19s; }
+
+/* ── MODULE STICKERS ── */
+.mod-sticker {
+  display:inline-flex; align-items:center; gap:8px;
+  font-size:11px; letter-spacing:2px; text-transform:uppercase;
+  font-family:var(--font-mono);
+  padding:5px 12px; border-radius:2px;
+  margin-bottom:6px;
+}
+
+/* Ping wave animation */
+@keyframes pingWave {
+  0%,100% { transform:scaleY(1); }
+  50%      { transform:scaleY(2); }
+}
+.wave-bars { display:inline-flex; gap:3px; align-items:flex-end; height:16px; margin-right:6px; }
+.wave-bars span {
+  width:3px; height:8px; border-radius:1px;
+  background:var(--mint);
+  animation: pingWave .8s ease-in-out infinite;
+}
+.wave-bars span:nth-child(2) { animation-delay:.15s; height:12px; }
+.wave-bars span:nth-child(3) { animation-delay:.30s; height:6px; }
+.wave-bars span:nth-child(4) { animation-delay:.45s; height:14px; }
+.wave-bars span:nth-child(5) { animation-delay:.60s; height:9px; }
+
+/* Scan line animation */
+@keyframes scanLine {
+  0%   { transform:translateY(-100%); opacity:0; }
+  10%  { opacity:1; }
+  90%  { opacity:1; }
+  100% { transform:translateY(300%); opacity:0; }
+}
+.scan-wrap { position:relative; overflow:hidden; }
+.scan-wrap::after {
+  content:'';
+  position:absolute; left:0; right:0; height:1px;
+  background:linear-gradient(90deg,transparent,var(--accent),transparent);
+  top:0;
+  animation: scanLine 3s linear infinite;
+}
+
+/* Shield pulse */
+@keyframes shieldPulse {
+  0%,100% { box-shadow:0 0 0 0 rgba(184,169,255,0.4); }
+  50%      { box-shadow:0 0 0 10px rgba(184,169,255,0); }
+}
+.shield-icon {
+  width:40px;height:40px;border-radius:50%;
+  background:rgba(184,169,255,0.1);
+  border:1px solid rgba(184,169,255,0.3);
+  display:inline-flex;align-items:center;justify-content:center;
+  animation: shieldPulse 2s ease infinite;
+  font-size:18px;
+}
+
+/* Rotating radar for Wi-Fi */
+@keyframes radarSpin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+.radar-icon { display:inline-block; animation: radarSpin 3s linear infinite; }
+
+/* Typing dots for Telegram */
+@keyframes typingDot {
+  0%,100% { opacity:.3; transform:translateY(0); }
+  50%      { opacity:1; transform:translateY(-4px); }
+}
+.typing-dots { display:inline-flex; gap:4px; align-items:center; }
+.typing-dots span {
+  width:6px;height:6px;border-radius:50%;
+  background:var(--lavender);
+  animation: typingDot 1.2s ease-in-out infinite;
+}
+.typing-dots span:nth-child(2) { animation-delay:.2s; }
+.typing-dots span:nth-child(3) { animation-delay:.4s; }
+
+/* Circuit lines for Pi */
+@keyframes circuitFlow {
+  0%   { stroke-dashoffset:100; }
+  100% { stroke-dashoffset:0; }
+}
+
+/* Floating emoji badge */
+@keyframes floatBadge {
+  0%,100% { transform:translateY(0) rotate(-2deg); }
+  50%      { transform:translateY(-6px) rotate(2deg); }
+}
+.float-badge {
+  display:inline-block;
+  font-size:28px;
+  animation: floatBadge 3s ease-in-out infinite;
+  filter:drop-shadow(0 4px 12px rgba(0,0,0,0.5));
+}
+
+/* Glowing number badge */
+.glow-num {
+  font-family:var(--font-display);
+  font-size:72px;
+  line-height:1;
+  color:var(--accent);
+  opacity:.12;
+  position:absolute;
+  top:12px; right:16px;
+  pointer-events:none;
+  font-style:normal;
+}
+
+/* Status dot blink */
+@keyframes statusBlink {
+  0%,100% { opacity:1; }
+  50%      { opacity:.2; }
+}
+.status-live {
+  display:inline-flex; align-items:center; gap:6px;
+  font-family:var(--font-mono); font-size:10px; letter-spacing:2px;
+  color:var(--mint);
+}
+.status-live::before {
+  content:'';width:7px;height:7px;border-radius:50%;
+  background:var(--mint);
+  animation: statusBlink 1.5s ease-in-out infinite;
+}
+
+/* Progress bar animation */
+@keyframes progFill {
+  from { width:0%; }
+  to   { width:var(--w); }
+}
+.anim-prog {
+  height:3px; background:rgba(255,255,255,0.06); border-radius:2px; overflow:hidden; margin-top:4px;
+}
+.anim-prog-fill {
+  height:100%; border-radius:2px;
+  background:linear-gradient(90deg, var(--accent), rgba(255,255,255,0.5));
+  animation: progFill 1.4s ease both;
+}
+
+/* Notification pop */
+@keyframes notifPop {
+  0%   { transform:scale(0.5) rotate(-10deg); opacity:0; }
+  70%  { transform:scale(1.1) rotate(3deg); opacity:1; }
+  100% { transform:scale(1) rotate(0deg); opacity:1; }
+}
+.notif-icon {
+  display:inline-block;
+  animation: notifPop .6s cubic-bezier(.34,1.56,.64,1) both;
+}
+.notif-icon:nth-child(2) { animation-delay:.1s; }
+.notif-icon:nth-child(3) { animation-delay:.2s; }
+.notif-icon:nth-child(4) { animation-delay:.3s; }
+
+/* Horizontal scroll ticker */
+@keyframes ticker {
+  from { transform:translateX(0); }
+  to   { transform:translateX(-50%); }
+}
+.ticker-wrap {
+  overflow:hidden; border-top:1px solid var(--border); border-bottom:1px solid var(--border);
+  padding:10px 0; margin: 16px 0;
+}
+.ticker-inner {
+  display:flex; gap:48px; white-space:nowrap;
+  animation: ticker 18s linear infinite;
+  font-family:var(--font-mono); font-size:14px; color:var(--muted); letter-spacing:2px;
+}
+.ticker-inner span { color:var(--accent); }
+
+/* Modal grid */
+.modal-grid-2 { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:16px; }
+.modal-grid-3 { display:grid; grid-template-columns:1fr 1fr 1fr; gap:16px; margin-bottom:16px; }
+.modal-grid-1 { display:grid; grid-template-columns:1fr; gap:16px; margin-bottom:16px; }
+@media(max-width:900px){ .modal-grid-2,.modal-grid-3{grid-template-columns:1fr;} }
+
+.mbox {
+  background:rgba(10,10,18,0.8);
+  border:1px solid var(--border);
+  padding:28px 24px;
+  transition:border-color .3s, background .3s;
+  position:relative; overflow:hidden;
+}
+.mbox::before {
+  content:''; position:absolute;
+  inset:0; opacity:0; transition:opacity .4s;
+  background: radial-gradient(circle at 30% 20%, rgba(77,255,195,0.06) 0%, transparent 60%);
+}
+.mbox:hover { border-color:rgba(255,255,255,0.18); background:rgba(10,10,28,0.72); }
+.mbox:hover::before { opacity:1; }
+.mbox-accent { border-left: 3px solid var(--accent); }
+
+.mbox-title {
+  font-family:var(--font-mono); font-size:14px;
+  letter-spacing:3px; text-transform:uppercase;
+  color:var(--accent); margin-bottom:16px;
+  display:flex; align-items:center; gap:10px;
+}
+.mbox-title::before { content:''; width:20px; height:1px; background:var(--accent); }
+
+.mbox h3 { font-size:20px; font-weight:700; color:#fff; margin-bottom:12px; }
+.mbox p  { font-size:16px; color:var(--muted); line-height:1.8; }
+.mbox ul { list-style:none; display:flex; flex-direction:column; gap:6px; margin-top:10px; }
+.mbox li { font-size:16px; color:var(--muted); display:flex; align-items:flex-start; gap:10px; }
+.mbox li::before { content:'→'; color:var(--accent); flex-shrink:0; font-family:var(--font-mono); font-size:11px; margin-top:2px; }
+
+.spec-table { width:100%; border-collapse:collapse; font-size:16px; margin-top:10px; }
+.spec-table tr { border-bottom:1px solid var(--border); }
+.spec-table tr:last-child { border-bottom:none; }
+.spec-table td { padding:10px 0; }
+.spec-table td:first-child { color:var(--muted); font-family:var(--font-mono); font-size:14px; padding-right:24px; white-space:nowrap; }
+.spec-table td:last-child { color:#fff; }
+
+.code-line {
+  font-family:var(--font-mono); font-size:15px;
+  padding:8px 16px;
+  background:rgba(0,0,0,0.5);
+  border-left:2px solid var(--accent);
+  color:var(--mint);
+  margin-bottom:4px;
+  display:block;
+}
+
+.cmd-row { display:flex; align-items:flex-start; gap:16px; padding:12px 0; border-bottom:1px solid var(--border); transition:background .2s; }
+.cmd-row:last-child { border-bottom:none; }
+.cmd-row:hover { background:rgba(184,169,255,0.03); }
+.cmd-row code { font-family:var(--font-mono); font-size:16px; color:var(--accent); min-width:120px; flex-shrink:0; }
+.cmd-row span { font-size:16px; color:var(--muted); line-height:1.7; }
+
+.flow-step { display:flex; gap:20px; padding:16px 0; border-bottom:1px solid var(--border); }
+.flow-step:last-child { border-bottom:none; }
+.flow-num { font-family:var(--font-display); font-size:42px; color:rgba(255,255,255,0.06); flex-shrink:0; width:48px; line-height:1; }
+.flow-body {}
+.flow-title { font-size:18px; font-weight:700; color:#fff; margin-bottom:6px; }
+.flow-desc { font-size:16px; color:var(--muted); line-height:1.7; }
+.flow-code { font-family:var(--font-mono); font-size:15px; color:var(--accent); margin-top:8px; }
+
+.section-divider {
+  height:1px;
+  background:linear-gradient(90deg, transparent, var(--border), transparent);
+  margin:48px 0;
+}
+
+/* Hero accent line */
+.modal-hero::after {
+  content:''; display:block;
+  width:80px; height:3px;
+  background:var(--accent);
+  margin-top:32px;
+  box-shadow:0 0 20px var(--accent);
+}
+</style>
+
+<script>// @ts-nocheck
+// ══════════════════════════════════════════════
+//  MODAL DATA
+// ══════════════════════════════════════════════
+
+const MODALS = {
+
+// ─────────────────── DESKTOP AGENT ───────────────────
+desktop: {
+  accent: '#4DFFC3',
+  label: 'CORE BRAIN',
+  prefix: '01',
+  icon: '🖥️',
+  title: 'DESKTOP<br><span>AGENT</span>',
+  sub: 'Основний застосунок NetGuardian на Python — мозок системи. 11 функціональних модулів, 50 000+ рядків коду, GUI на CustomTkinter з темно-блакитною палітрою. Запускається на Windows 10/11.',
+  html: `
+    <div class="ticker-wrap">
+      <div class="ticker-inner">
+        <span>⚡</span> PYTHON 3.11 &nbsp;
+        <span>🧠</span> GEMINI AI &nbsp;
+        <span>🔧</span> AUTO-FIX 35+ &nbsp;
+        <span>📊</span> SQLITE &nbsp;
+        <span>🌐</span> MQTT &nbsp;
+        <span>🛡️</span> VPN KILL SWITCH &nbsp;
+        <span>📡</span> DNS BENCHMARK &nbsp;
+        <span>🎮</span> GAME MODE &nbsp;
+        <span>⚡</span> PYTHON 3.11 &nbsp;
+        <span>🧠</span> GEMINI AI &nbsp;
+        <span>🔧</span> AUTO-FIX 35+ &nbsp;
+        <span>📊</span> SQLITE &nbsp;
+        <span>🌐</span> MQTT &nbsp;
+        <span>🛡️</span> VPN KILL SWITCH &nbsp;
+        <span>📡</span> DNS BENCHMARK &nbsp;
+        <span>🎮</span> GAME MODE &nbsp;
+      </div>
+    </div>
+
+    <!-- ПРОСТО -->
+      <p style="font-size:15px; color:#ddd; line-height:1.9; margin-bottom:14px;">
+        Desktop Agent — <strong style="color:#fff">основний застосунок системи</strong>, що запускається на комп'ютері користувача під Windows. Програма безперервно збирає показники мережі, аналізує їх і при виявленні проблем або сповіщає користувача, або виправляє їх автоматично.
+      </p>
+      <p style="font-size:15px; color:#ddd; line-height:1.9; margin-bottom:14px;">
+        На відміну від існуючих утиліт, які лише відображають дані, NetGuardian <strong style="color:#fff">визначає конкретний рівень і причину збою</strong> — роутер, провайдер, DNS чи сам комп'ютер — і формує рекомендацію або виконує автоматичне виправлення одним із 35+ вбудованих сценаріїв.
+      </p>
+      <p style="font-size:15px; color:#ddd; line-height:1.9; margin-bottom:14px;">
+        Програма реалізована на <strong style="color:#fff">Python 3.11</strong> і складається з 11 незалежних функціональних модулів. Графічний інтерфейс побудований на бібліотеці CustomTkinter з темною темою та семантичним кольоровим кодуванням станів: зелений — норма, жовтий — попередження, червоний — критична проблема.
+      </p>
+      <p style="font-size:15px; color:#ddd; line-height:1.9;">
+        Ключова наукова новизна — <strong style="color:#fff">гібридний AI-модуль</strong>: при наявності інтернету використовується Google Gemini для аналізу та формування рекомендацій природною мовою; при відсутності — локальна база знань з 200+ сценаріїв. Перемикання між режимами відбувається автоматично і непомітно для користувача.
+      </p>
+    </div>
+
+    <div class="modal-grid-3">
+      <div class="mbox mbox-accent" style="grid-column:span 3">
+        <div class="mbox-title"><span class="float-badge" style="font-size:18px;margin-right:8px;">⚙️</span> Технічний стек (для протоколу)</div>
+        <table class="spec-table">
+          <tr><td>Мова</td><td>Python 3.11+</td></tr>
+          <tr><td>GUI</td><td>CustomTkinter 5.2.x + tkinter (темна тема, HiDPI)</td></tr>
+          <tr><td>AI</td><td>Google Gemini API (gemini-2.5-flash + fallback ланцюг)</td></tr>
+          <tr><td>IoT</td><td>paho-mqtt 1.6.x, bібліотека tapo (Rust + Python bindings)</td></tr>
+          <tr><td>Мережа</td><td>socket, subprocess, psutil, pywifi, scapy, requests</td></tr>
+          <tr><td>БД</td><td>SQLite3 (4 бази: forecast.db, events.db, pi_agent_cache.db, netguardian_data.db)</td></tr>
+          <tr><td>Розмір</td><td>~24.5 MB (PyInstaller .exe)</td></tr>
+          <tr><td>Потоки</td><td>threading + state-pattern (фонові потоки → головний GUI через after())</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <div class="modal-grid-2">
+      <div class="mbox mbox-accent">
+        <div class="mbox-title"><div class="wave-bars"><span></span><span></span><span></span><span></span><span></span></div> Dashboard</div>
+        <div class="status-live" style="margin-bottom:10px;">LIVE MONITORING</div>
+        <h3>Real-time моніторинг мережі</h3>
+        <p style="font-size:15px; color:#aaa; margin-bottom:12px;">Центральний модуль системи. Відображає ключові мережеві показники в реальному часі та визначає на якому рівні виникає проблема.</p>
+        <ul>
+          <li>Паралельний ping до Gateway, ISP DNS, Cloudflare 1.1.1.1, Google 8.8.8.8</li>
+          <li>Jitter, packet loss, Wi-Fi RSSI у реальному часі</li>
+          <li>Публічна IP-адреса + ISP + геолокація через IP API</li>
+          <li>Speedtest (DL/UL Мбіт/с) — asynchronous</li>
+          <li>Сервісні плитки: DNS, Gateway, Internet, VPN, Pi-Agent</li>
+          <li>Multi-layer root cause: якщо тільки Gateway лагає → проблема LAN; далі — провайдер</li>
+        </ul>
+      </div>
+      <div class="mbox mbox-accent">
+        <div class="mbox-title"><span class="radar-icon">📡</span>&nbsp; Wi-Fi Analyzer</div>
+        <h3>Аналіз бездротових мереж</h3>
+        <p style="font-size:15px; color:#aaa; margin-bottom:12px;">Сканує радіоефір і аналізує завантаженість Wi-Fi каналів. Перевантажений канал є однією з найпоширеніших причин нестабільного Wi-Fi.</p>
+        <ul>
+          <li>Сканування через WlanAPI та netsh wlan show networks</li>
+          <li>SSID, BSSID, RSSI (дБм), канал, частота (2.4/5 ГГц)</li>
+          <li>Візуальна карта зайнятості каналів 1–14 (2.4 ГГц)</li>
+          <li>Виявлення колізій: мережі на тому ж каналі</li>
+          <li>Рекомендація вільного каналу (1, 6 або 11)</li>
+          <li>WPA/WPA2/WPA3 автентифікація-статус</li>
+        </ul>
+      </div>
+      <div class="mbox mbox-accent">
+        <div class="mbox-title"><span class="notif-icon">🌐</span> DNS Benchmark</div>
+        <h3>Тестування 12+ DNS-серверів</h3>
+        <p style="font-size:15px; color:#aaa; margin-bottom:12px;">DNS — сервер що перетворює доменні імена на IP-адреси. Швидкодія DNS впливає на час відкриття сторінок. Модуль тестує 12+ публічних серверів і встановлює оптимальний.</p>
+        <ul>
+          <li>Cloudflare 1.1.1.1, Google 8.8.8.8, Quad9, AdGuard, NextDNS, OpenDNS…</li>
+          <li>Обхід локального DNS-кешу Windows через raw socket DNS query</li>
+          <li>Середній час відповіді, p95, success rate для кожного провайдера</li>
+          <li>Графік порівняння у вигляді горизонтальних bar charts</li>
+          <li>Авто-кнопка «Встановити найшвидший DNS» → netsh команда</li>
+          <li>DNS over HTTPS (DoH) — вмикання через Firefox about:config / Windows DoH</li>
+        </ul>
+      </div>
+      <div class="mbox mbox-accent">
+        <div class="mbox-title"><span class="float-badge" style="font-size:16px;">🎮</span> Game Mode</div>
+        <h3>Ігрова оптимізація мережі</h3>
+        <p style="font-size:15px; color:#aaa; margin-bottom:12px;">Оптимізує параметри мережевого стека для зниження затримок. Зупиняє фонові процеси що конкурують за смугу пропускання під час ігрової сесії.</p>
+        <ul>
+          <li>Моніторинг ping до 10 ігрових серверів: Steam, Riot (Valorant), Battle.net, Discord, CS2, Epic</li>
+          <li>QoS: встановлення DSCP приоритетів для ігрових портів</li>
+          <li>MTU tuning: визначення оптимального MTU ping -f тестом</li>
+          <li>TCP налаштування: вимкнення алгоритму Nagle (TcpNoDelay=1)</li>
+          <li>«Вбиває» фонові процеси-паразити: торренти, Windows Update, Steam downloads</li>
+          <li>Відновлення всіх налаштувань після виходу з Game Mode</li>
+        </ul>
+      </div>
+      <div class="mbox mbox-accent">
+        <div class="mbox-title"><div class="scan-wrap" style="display:inline-block;padding:2px 8px;border:1px solid rgba(77,255,195,0.3);">SCAN</div>&nbsp; LAN Security</div>
+        <h3>Аудит локальної мережі</h3>
+        <p style="font-size:15px; color:#aaa; margin-bottom:12px;">Виявляє всі пристрої в локальній мережі та класифікує їх за MAC OUI. Сповіщає про появу нових або підозрілих вузлів — актуально з точки зору безпеки мережі.</p>
+        <ul>
+          <li>ARP-скан всієї підмережі (192.168.X.0/24)</li>
+          <li>Визначення виробника за MAC OUI через IEEE база даних</li>
+          <li>Класифікація: телефони/ПК/IoT/невідомий</li>
+          <li>Виявлення НОВИХ пристроїв → push у Telegram</li>
+          <li>Виявлення підозрілих MAC (дивний OUI, нульовий префікс)</li>
+          <li>Збереження whitelist «довірених пристроїв» у SQLite</li>
+          <li>MAC Randomization detection (приватна адреса → вказівка на телефон)</li>
+        </ul>
+      </div>
+      <div class="mbox mbox-accent">
+        <div class="mbox-title"><span class="notif-icon">📈</span> Forecast — «Погода інтернету»</div>
+        <h3>Тижнева статистика та прогноз</h3>
+        <p style="font-size:15px; color:#aaa; margin-bottom:12px;">Накопичує часові ряди мережевих метрик і будує статистику: SLA провайдера, виявлення аномалій, аналіз пікових годин навантаження.</p>
+        <ul>
+          <li>Накопичення ping/jitter/loss кожну хвилину → SQLite forecast.db</li>
+          <li>Теплова карта (heatmap) по годинах тижня — наочна «погода»</li>
+          <li>SLA провайдера: % часу коли ping &lt; 100ms</li>
+          <li>Аномалії: автоматичне виявлення різких стрибків (3σ)</li>
+          <li>Пікові години навантаження провайдера</li>
+          <li>Дані від Pi-агента через MQTT — 24/7 навіть без ПК</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="modal-grid-2">
+      <div class="mbox mbox-accent">
+        <div class="mbox-title"><div class="shield-icon" style="width:22px;height:22px;font-size:12px;border-radius:3px;display:inline-flex;align-items:center;justify-content:center;">🛡</div>&nbsp; Auto-VPN</div>
+        <h3>Управління VPN-з'єднаннями</h3>
+        <p style="font-size:15px; color:#aaa; margin-bottom:12px;">Контролює стан VPN-з'єднання і захищає від витоку трафіку при непередбаченому відключенні тунелю через механізм Kill Switch.</p>
+        <ul>
+          <li>Підтримка: Radmin VPN, OpenVPN, WireGuard</li>
+          <li>Авто-визначення ProxyType через ipconfig + публічну IP</li>
+          <li>Anti-flicker: 2/3-ON = підключено, 3/3-OFF = відключено</li>
+          <li>Kill Switch: блокує інтернет якщо VPN раптово падає</li>
+          <li>Geo-аналіз: країна + ISP VPN-сервера через IP API</li>
+          <li>Тригер пере-діагностики при зміні VPN-стану</li>
+          <li>DNS Leak тест: чи DNS-запити ідуть через VPN</li>
+        </ul>
+      </div>
+      <div class="mbox mbox-accent">
+        <div class="mbox-title"><span class="float-badge" style="font-size:16px;animation-delay:.5s;">🧠</span> Гібридний AI-модуль</div>
+        <h3>3-рівневий Fallback Engine</h3>
+        <p style="font-size:15px; color:#aaa; margin-bottom:12px;">Реалізує гібридну стратегію з трьома рівнями: хмарний Gemini → локальна база знань → Pi-агент. Забезпечує безперервну роботу незалежно від наявності інтернету.</p>
+        <ul>
+          <li><b style="color:#fff">Рівень 1 — Gemini API:</b> gemini-2.5-flash → 2.0-flash → 2.5-flash-lite → 2.0-flash-lite</li>
+          <li>Промпт: системна роль + структуровані дані + JSON-формат відповіді</li>
+          <li><b style="color:#fff">Рівень 2 — Локальна KB:</b> 200+ типових сценаріїв, detect_topic() + detect_action()</li>
+          <li>Теми: tapo/pi/vpn/forecast/lan/diag/network/utility</li>
+          <li>Дії: status/control/howto/capability/diagnose</li>
+          <li><b style="color:#fff">Рівень 3 — Pi AI:</b> запит до локального агента через MQTT</li>
+          <li>35+ Auto-Fix: flushdns, dhcp_renew, fix_mtu, enable_nic, disable_nagle, tapo_off…</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="mbox mbox-accent modal-grid-1" style="margin-bottom:16px">
+      <div class="mbox-title">AI діагностика: база знань (вибірка)</div>
+      <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:8px; font-size:12px; font-family:var(--font-mono);">
+        <span style="color:var(--muted); padding:8px; background:rgba(0,0,0,0.4);">L1-007 Logic Freeze → tapo_off</span>
+        <span style="color:var(--muted); padding:8px; background:rgba(0,0,0,0.4);">L2-029 APIPA 169.254 → dhcp_renew</span>
+        <span style="color:var(--muted); padding:8px; background:rgba(0,0,0,0.4);">L3-001 DNS fail → flush_dns</span>
+        <span style="color:var(--muted); padding:8px; background:rgba(0,0,0,0.4);">L3-008 ISP DNS down → set_google_dns</span>
+        <span style="color:var(--muted); padding:8px; background:rgba(0,0,0,0.4);">L3-055 MTU Black Hole → fix_mtu</span>
+        <span style="color:var(--muted); padding:8px; background:rgba(0,0,0,0.4);">L4-013 Nagle Latency → disable_nagle</span>
+        <span style="color:var(--muted); padding:8px; background:rgba(0,0,0,0.4);">L4-003 SMB Port 445 WAN → alert</span>
+        <span style="color:var(--muted); padding:8px; background:rgba(0,0,0,0.4);">L1-011 Overvoltage → tapo_off</span>
+      </div>
+    </div>
+
+    <div class="modal-grid-2">
+      <div class="mbox mbox-accent">
+        <div class="mbox-title">Модуль Voltage Guardian (Tapo P110)</div>
+        <h3>IoT-моніторинг живлення</h3>
+        <ul>
+          <li>Напруга (В), струм (А), потужність (Вт) — реальний час</li>
+          <li>Автозахист: V&lt;190 → вимкнути, V&gt;250 → вимкнути</li>
+          <li>Графік напруги по годинах → аномалії = стрибки мережі</li>
+          <li>Розрахунок вартості електроенергії (тариф 4.32 грн/кВт·год)</li>
+          <li>Авто-вимкнення живлення при збої</li>
+          <li>Перевірка зв'язку: ping IP розетки, api handshake</li>
+          <li>Захист через SHIP 2.0 + TP-Link Cloud Auth</li>
+        </ul>
+      </div>
+      <div class="mbox mbox-accent">
+        <div class="mbox-title">Системні вимоги та розгортання</div>
+        <h3>Запуск NetGuardian</h3>
+        <table class="spec-table" style="margin-top:0">
+          <tr><td>ОС</td><td>Windows 10/11 64-bit</td></tr>
+          <tr><td>Python</td><td>3.11+ (рекомендовано) / 3.10+</td></tr>
+          <tr><td>RAM</td><td>Мінімум 2 GB (рекомендовано 4 GB)</td></tr>
+          <tr><td>Диск</td><td>150 MB (exe) + ~50 MB SQLite БД</td></tr>
+          <tr><td>Мережа</td><td>Ethernet або Wi-Fi 802.11n+</td></tr>
+          <tr><td>Права</td><td>Адміністратор (для netsh, ipconfig, ARP)</td></tr>
+          <tr><td>Інтернет</td><td>Опційно (offline KB fallback)</td></tr>
+          <tr><td>Distrib</td><td>.exe via PyInstaller --onefile --windowed</td></tr>
+        </table>
+      </div>
+    </div>
+  `
+},
+
+// ─────────────────── HARDWARE PROBE ───────────────────
+hardware: {
+  accent: '#FF6855',
+  label: 'IOT WATCHDOG',
+  prefix: '02',
+  icon: '🔬',
+  title: 'HARDWARE<br><span>PROBE</span>',
+  sub: 'Автономний агент моніторингу на Raspberry Pi Zero 2 W. Збирає метрики 24/7 навіть коли ПК вимкнений. Через MQTT передає дані в основний застосунок. Разом з Tapo P110 — фізичний watchdog для роутера.',
+  html: `
+    <div class="ticker-wrap">
+      <div class="ticker-inner">
+        <span>🍓</span> RASPBERRY PI ZERO 2W &nbsp;
+        <span>🔌</span> TAPO P110 &nbsp;
+        <span>📡</span> MQTT PROTOCOL &nbsp;
+        <span>⚡</span> 0.4–2W &nbsp;
+        <span>📏</span> 65×30MM &nbsp;
+        <span>🌐</span> HIVEMQ BROKER &nbsp;
+        <span>🔄</span> WATCHDOG 24/7 &nbsp;
+        <span>🛡️</span> AUTO-REBOOT &nbsp;
+        <span>🍓</span> RASPBERRY PI ZERO 2W &nbsp;
+        <span>🔌</span> TAPO P110 &nbsp;
+        <span>📡</span> MQTT PROTOCOL &nbsp;
+        <span>⚡</span> 0.4–2W &nbsp;
+        <span>📏</span> 65×30MM &nbsp;
+        <span>🌐</span> HIVEMQ BROKER &nbsp;
+        <span>🔄</span> WATCHDOG 24/7 &nbsp;
+        <span>🛡️</span> AUTO-REBOOT &nbsp;
+      </div>
+    </div>
+    <!-- ПРОСТО -->
+    <div class="mbox" style="border:1px solid rgba(255,104,85,0.3); background:rgba(255,104,85,0.04); margin-bottom:16px;">
+      <div style="font-family:var(--font-mono); font-size:14px; letter-spacing:3px; color:var(--coral); margin-bottom:16px;">💬 КОРОТКО ПРО СУТЬ</div>
+      <p style="font-size:15px; color:#ddd; line-height:1.9; margin-bottom:14px;">
+        Апаратна частина системи — це <strong style="color:#fff">Raspberry Pi Zero 2 W</strong>, одноплатний мікрокомп'ютер розміром 65×30 мм, що розміщується безпосередньо біля роутера і виконує безперервний моніторинг мережі незалежно від стану основного ПК.
+      </p>
+      <p style="font-size:15px; color:#ddd; line-height:1.9; margin-bottom:14px;">
+        Це дає системі принципово важливу можливість — <strong style="color:#fff">локалізувати проблему за джерелом</strong>. Якщо обидва пристрої (ПК і Pi) одночасно фіксують деградацію — проблема на стороні провайдера або роутера. Якщо тільки ПК — проблема локальна: VPN, антивірус, Wi-Fi адаптер. Це неможливо визначити маючи лише одне джерело вимірювань.
+      </p>
+      <p style="font-size:15px; color:#ddd; line-height:1.9; margin-bottom:14px;">
+        Разом із розумною розеткою <strong style="color:#fff">TP-Link Tapo P110</strong> реалізовано апаратний watchdog: при виявленні тривалого збою Pi надсилає команду на розетку через локальний API, і та вимикає живлення роутера. Це <strong style="color:#fff">фізичне відключення</strong>, яке зупиняє роботу роутера — після чого користувач може ввімкнути його самостійно, або це відбувається за іншими правилами системи.
+      </p>
+      <p style="font-size:15px; color:#ddd; line-height:1.9;">
+        Передача даних між Pi і основним застосунком відбувається через протокол <strong style="color:#fff">MQTT</strong> — стандарт IoT-комунікації з мінімальними накладними витратами, розроблений для роботи в нестабільних мережах. Як брокер використовується HiveMQ Public Broker.
+      </p>
+    </div>
+
+    <div class="modal-grid-3">
+      <div class="mbox mbox-accent">
+        <div class="mbox-title"><span class="float-badge" style="font-size:16px;">🍓</span> Raspberry Pi Zero 2 W</div>
+        <table class="spec-table">
+          <tr><td>Процесор</td><td>RP3A0-AU, 4×Cortex-A53, 1.0 ГГц</td></tr>
+          <tr><td>RAM</td><td>512 МБ LPDDR2 SDRAM</td></tr>
+          <tr><td>Wi-Fi</td><td>802.11b/g/n, 2.4 ГГц</td></tr>
+          <tr><td>Bluetooth</td><td>4.2 / BLE</td></tr>
+          <tr><td>USB</td><td>1× micro-USB 2.0 OTG</td></tr>
+          <tr><td>GPIO</td><td>40-пінова колодка</td></tr>
+          <tr><td>Розміри</td><td>65 × 30 × 5 мм</td></tr>
+          <tr><td>Маса</td><td>~10 г</td></tr>
+          <tr><td>Живлення</td><td>5V micro-USB, ~0.4–2 Вт</td></tr>
+          <tr><td>ОС</td><td>Raspberry Pi OS Lite 64-bit</td></tr>
+          <tr><td>Python</td><td>3.11 (аналогічно основному)</td></tr>
+          <tr><td>Ціна</td><td>$15–20</td></tr>
+        </table>
+      </div>
+      <div class="mbox mbox-accent">
+        <div class="mbox-title">TP-Link Tapo P110</div>
+        <table class="spec-table">
+          <tr><td>Тип</td><td>Smart Socket з енергомоніторингом</td></tr>
+          <tr><td>Wi-Fi</td><td>802.11b/g/n, 2.4 ГГц</td></tr>
+          <tr><td>Протокол</td><td>SHIP 2.0 + TP-Link Cloud Auth</td></tr>
+          <tr><td>Макс. навантаження</td><td>16А / 3680 Вт</td></tr>
+          <tr><td>Точність</td><td>±1% (при &gt;1 Вт)</td></tr>
+          <tr><td>Вимірює</td><td>Напруга В, струм А, потужність Вт</td></tr>
+          <tr><td>Тип розетки</td><td>Schuko Type F (Євро)</td></tr>
+          <tr><td>Розміри</td><td>71×39×71 мм</td></tr>
+          <tr><td>Шифрування</td><td>WPA2/WPA3-PSK + AES-128</td></tr>
+          <tr><td>Бібліотека</td><td>tapo (Rust + Python bindings)</td></tr>
+          <tr><td>⚠️ Увага</td><td>Після оновлення 2024 — тільки через Cloud (KLAP видалений)</td></tr>
+        </table>
+      </div>
+      <div class="mbox mbox-accent">
+        <div class="mbox-title">SUNROZ USB→RJ45 адаптер</div>
+        <h3>Підключення Pi до роутера</h3>
+        <ul>
+          <li>USB 2.0 to 10/100 Ethernet</li>
+          <li>Pi Zero 2 W не має вбудованого Ethernet</li>
+          <li>Підключається у micro-USB OTG порт через OTG-адаптер</li>
+          <li>Stable LAN 100 Мбіт — стабільніше ніж Wi-Fi для моніторингу</li>
+          <li>Драйвер вбудований в Raspberry Pi OS (asix ax88179)</li>
+          <li>Не потребує налаштування — plug-and-play</li>
+        </ul>
+        <div class="mbox-title" style="margin-top:16px">D-Link DIR-820 (роутер)</div>
+        <table class="spec-table">
+          <tr><td>CPU</td><td>MediaTek MT7628DAN, 575 МГц</td></tr>
+          <tr><td>RAM</td><td>64 МБ DDR2</td></tr>
+          <tr><td>Flash</td><td>16 МБ SPI</td></tr>
+          <tr><td>LAN</td><td>3× 10/100 Fast Ethernet</td></tr>
+          <tr><td>Wi-Fi</td><td>802.11b/g/n, 2.4 ГГц</td></tr>
+          <tr><td>Gateway</td><td>192.168.0.1</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <div class="section-divider"></div>
+
+    <div class="modal-grid-2">
+      <div class="mbox mbox-accent">
+        <div class="mbox-title"><div class="wave-bars" style="--mint:var(--coral)"><span style="background:var(--coral)"></span><span style="background:var(--coral)"></span><span style="background:var(--coral)"></span><span style="background:var(--coral)"></span><span style="background:var(--coral)"></span></div> Watchdog алгоритм</div>
+        <div class="flow-step">
+          <div class="flow-num">01</div>
+          <div class="flow-body">
+            <div class="flow-title" style="color:#FF6855">Continuous Monitoring</div>
+            <div class="flow-desc">Pi пінгує 8.8.8.8 та 1.1.1.1 кожні 30 секунд через ICMP. Записує ping_ms, loss_pct у SQLite.</div>
+            <div class="flow-code">ping_interval = 30s | hosts = [8.8.8.8, 1.1.1.1]</div>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="flow-num">02</div>
+          <div class="flow-body">
+            <div class="flow-title" style="color:var(--gold)">Failure Detection</div>
+            <div class="flow-desc">Якщо 10 пінгів поспіль без відповіді (5 хвилин неперервно) — тригер. Відрізняє одиночні spike від реального збою.</div>
+            <div class="flow-code">if failed_pings >= 10: trigger_power_off()</div>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="flow-num">03</div>
+          <div class="flow-body">
+            <div class="flow-title" style="color:var(--coral)">Local API Call до Tapo</div>
+            <div class="flow-desc">HTTP POST запит на IP розетки (192.168.0.X) у локальній мережі. Не залежить від інтернету — працює навіть коли WAN лежить.</div>
+            <div class="flow-code">POST /api/device/power {"state":"off"}</div>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="flow-num">04</div>
+          <div class="flow-body">
+            <div class="flow-title" style="color:var(--lavender)">Power Off via Tapo</div>
+            <div class="flow-desc">Розетка вимикає живлення роутера через локальний API. Ввімкнення назад — вручну або за окремою командою.</div>
+            <div class="flow-code">POST {"state":"off"}  ← фінал</div>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="flow-num">05</div>
+          <div class="flow-body">
+            <div class="flow-title" style="color:var(--mint)">Recovery + Telegram Alert</div>
+            <div class="flow-desc">Роутер завантажується ~60с. Pi верифікує відновлення пінгом. Telegram повідомлення з часом простою.</div>
+            <div class="flow-code">telegram.send(f"⚡ Power OFF | downtime: {t}s")</div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div class="mbox mbox-accent" style="margin-bottom:16px">
+          <div class="mbox-title">MQTT архітектура</div>
+          <h3>HiveMQ Public Broker</h3>
+          <p>broker.hivemq.com:1883 — безкоштовний публічний MQTT брокер для dev-проєктів. Prefix топіків забезпечує унікальність у публічному брокері.</p>
+          <ul>
+            <li>netguardian/dim4ik2003/<b>heartbeat</b> — Pi живий (кожні 30с)</li>
+            <li>netguardian/dim4ik2003/<b>ping</b> — метрики ping/jitter/loss</li>
+            <li>netguardian/dim4ik2003/<b>lan_scan</b> — результати ARP скану</li>
+            <li>netguardian/dim4ik2003/<b>interfaces</b> — мережеві інтерфейси Pi</li>
+            <li>netguardian/dim4ik2003/<b>speedtest</b> — результат speedtest</li>
+            <li>netguardian/dim4ik2003/<b>ai_request</b> — запит AI-аналізу</li>
+            <li>netguardian/dim4ik2003/<b>ai_response</b> — відповідь Pi AI</li>
+          </ul>
+        </div>
+        <div class="mbox mbox-accent" style="margin-bottom:16px">
+          <div class="mbox-title">Pi-агент: що збирає 24/7</div>
+          <ul>
+            <li>Ping до Cloudflare, Google, ISP кожні 30 секунд</li>
+            <li>Jitter (стандартне відхилення затримки)</li>
+            <li>Packet loss %</li>
+            <li>Speedtest по розкладу (раз на годину)</li>
+            <li>Температура CPU Pi (тепловий дросель = баг)</li>
+            <li>Uptime агента та Pi</li>
+            <li>Список мережевих інтерфейсів та їх статус</li>
+            <li>ARP-таблиця LAN — список пристроїв у мережі</li>
+          </ul>
+        </div>
+        <div class="mbox mbox-accent">
+          <div class="mbox-title">Ключова перевага подвійного моніторингу</div>
+          <h3>Локалізація проблеми</h3>
+          <table class="spec-table">
+            <tr><td>ПК: high ping<br>Pi: OK</td><td style="color:var(--gold)">→ Проблема у ПК (VPN, антивірус, Wi-Fi драйвер)</td></tr>
+            <tr><td>ПК: high ping<br>Pi: high ping</td><td style="color:var(--coral)">→ Проблема в роутері або у провайдера</td></tr>
+            <tr><td>ПК: offline<br>Pi: online</td><td style="color:var(--gold)">→ Проблема саме ПК, не мережі</td></tr>
+            <tr><td>ПК: online<br>Pi: offline</td><td style="color:var(--coral)">→ Pi відключився (живлення, Ethernet)</td></tr>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-divider"></div>
+
+    <div class="mbox mbox-accent">
+      <div class="mbox-title">Встановлення Pi-агента (покроково)</div>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-top:10px;">
+        <div>
+          <span class="code-line"># 1. Запис образу через Raspberry Pi Imager</span>
+          <span class="code-line"># Встанови hostname: netguardian.local</span>
+          <span class="code-line"># Вкажи Wi-Fi SSID + пароль у налаштуваннях</span>
+          <span class="code-line"># 2. Перше підключення</span>
+          <span class="code-line">ssh pi@netguardian.local</span>
+          <span class="code-line"># 3. Встановлення залежностей</span>
+          <span class="code-line">pip install paho-mqtt psutil scapy</span>
+        </div>
+        <div>
+          <span class="code-line"># 4. Копіювання коду агента</span>
+          <span class="code-line">scp -r pi_agent/ pi@netguardian.local:~/</span>
+          <span class="code-line"># 5. Systemd сервіс (автозапуск)</span>
+          <span class="code-line">sudo nano /etc/systemd/system/netguardian-agent.service</span>
+          <span class="code-line"># ExecStart=python3 /home/pi/pi_agent/main.py</span>
+          <span class="code-line"># Restart=always</span>
+          <span class="code-line">sudo systemctl enable --now netguardian-agent</span>
+        </div>
+      </div>
+    </div>
+  `
+},
+
+// ─────────────────── TELEGRAM BOT ───────────────────
+telegram: {
+  accent: '#B8A9FF',
+  label: 'REMOTE CONTROL',
+  prefix: '03',
+  icon: '📱',
+  title: 'TELEGRAM<br><span>BOT</span>',
+  sub: 'Підсистема віддаленого керування через Telegram Messenger — мобільний інтерфейс без розробки окремого додатку. 14+ команд, автоматичні сповіщення, захист через ID Whitelist, інтеграція зі Smart Agent.',
+  html: `
+    <div class="ticker-wrap">
+      <div class="ticker-inner">
+        <span>📱</span> TELEGRAM BOT API &nbsp;
+        <span>🔐</span> ID WHITELIST &nbsp;
+        <span>📸</span> REMOTE SCREENSHOT &nbsp;
+        <span>🔄</span> ROUTER REBOOT &nbsp;
+        <span>🔔</span> AUTO ALERTS &nbsp;
+        <span>📊</span> DAILY REPORT &nbsp;
+        <span>🛡️</span> KILL SWITCH &nbsp;
+        <span>⌨️</span> 14 COMMANDS &nbsp;
+        <span>📱</span> TELEGRAM BOT API &nbsp;
+        <span>🔐</span> ID WHITELIST &nbsp;
+        <span>📸</span> REMOTE SCREENSHOT &nbsp;
+        <span>🔄</span> ROUTER REBOOT &nbsp;
+        <span>🔔</span> AUTO ALERTS &nbsp;
+        <span>📊</span> DAILY REPORT &nbsp;
+        <span>🛡️</span> KILL SWITCH &nbsp;
+        <span>⌨️</span> 14 COMMANDS &nbsp;
+      </div>
+    </div>
+    <!-- ПРОСТО -->
+    <div class="mbox" style="border:1px solid rgba(184,169,255,0.3); background:rgba(184,169,255,0.04); margin-bottom:16px;">
+      <div style="font-family:var(--font-mono); font-size:14px; letter-spacing:3px; color:var(--lavender); margin-bottom:16px;">💬 КОРОТКО ПРО СУТЬ</div>
+      <p style="font-size:15px; color:#ddd; line-height:1.9; margin-bottom:14px;">
+        Telegram-бот — це <strong style="color:#fff">підсистема віддаленого моніторингу та керування</strong>, реалізована без розробки окремого мобільного додатку. Це свідоме архітектурне рішення: Telegram вже встановлений у більшості користувачів, має відкритий Bot API, і не потребує ні розгортання на сервері, ні публікації в App Store.
+      </p>
+      <p style="font-size:15px; color:#ddd; line-height:1.9; margin-bottom:14px;">
+        Бот надає <strong style="color:#fff">14 команд</strong> для отримання стану системи та виконання дій: вимкнення живлення роутера через Tapo, отримання скріншоту робочого столу, запуск діагностики, перегляд тижневої статистики тощо. Окрім команд, бот <strong style="color:#fff">автоматично надсилає сповіщення</strong> при виявленні подій — збоях мережі, появі нових пристроїв у LAN, спрацюванні захисту напруги.
+      </p>
+      <p style="font-size:15px; color:#ddd; line-height:1.9; margin-bottom:14px;">
+        Безпека реалізована через <strong style="color:#fff">ID Whitelist</strong>: бот перевіряє унікальний ідентифікатор Telegram-акаунта і ігнорує будь-які запити від сторонніх. Критичні команди додатково вимагають підтвердження через inline keyboard, а всі дії записуються в журнал із timestamp.
+      </p>
+      <p style="font-size:15px; color:#ddd; line-height:1.9;">
+        Технічно бот інтегрований зі <strong style="color:#fff">Smart Agent</strong> — внутрішнім координатором NetGuardian, який має доступ до поточного стану всіх модулів системи і може виконувати дії від їх імені.
+      </p>
+    </div>
+
+    <div class="modal-grid-3">
+      <div class="mbox mbox-accent" style="grid-column:span 3">
+        <div class="mbox-title">⚙️ Технічний стек Telegram Bot</div>
+        <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:16px;">
+          <table class="spec-table">
+            <tr><td>Фреймворк</td><td>python-telegram-bot 20.x (async)</td></tr>
+            <tr><td>API</td><td>Telegram Bot API v7.x</td></tr>
+            <tr><td>Async</td><td>asyncio + aiohttp</td></tr>
+          </table>
+          <table class="spec-table">
+            <tr><td>Screenshot</td><td>Pillow + mss (multi-screen)</td></tr>
+            <tr><td>Security</td><td>ID Whitelist (chat_id фільтр)</td></tr>
+            <tr><td>Hosting</td><td>Long Polling (не потрібен webhook/VPS)</td></tr>
+          </table>
+          <table class="spec-table">
+            <tr><td>Інтеграція</td><td>Smart Agent (NetGuardian API)</td></tr>
+            <tr><td>Логування</td><td>SQLite events.db з timestamp</td></tr>
+            <tr><td>Повідомлення</td><td>Markdown V2 + emoji форматування</td></tr>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-grid-2">
+      <div class="mbox mbox-accent">
+        <div class="mbox-title"><span class="typing-dots"><span></span><span></span><span></span></span>&nbsp; Всі команди бота</div>
+        <div class="cmd-row"><code>/start</code><span>Привітання, список команд, статус підключення до Smart Agent</span></div>
+        <div class="cmd-row"><code>/status</code><span>Поточний стан мережі: ping, jitter, loss, ISP, публічна IP, Pi-агент статус, Tapo напруга</span></div>
+        <div class="cmd-row"><code>/diag</code><span>Запустити швидку AI-діагностику (L1-L7 аналіз) і отримати JSON-звіт у Telegram</span></div>
+        <div class="cmd-row"><code>/reboot</code><span>Вимкнення живлення роутера через Tapo P110. Вимагає підтвердження [Так/Ні]</span></div>
+        <div class="cmd-row"><code>/screen</code><span>📸 Скріншот поточного стану робочого столу ПК — надсилається як фото у чат</span></div>
+        <div class="cmd-row"><code>/flushdns</code><span>Виконати ipconfig /flushdns на ПК та повернути результат</span></div>
+        <div class="cmd-row"><code>/daily</code><span>📊 Добовий звіт від Pi-агента: avg ping, SLA %, аномалії, кількість записів</span></div>
+        <div class="cmd-row"><code>/weekly</code><span>📈 Тижневий звіт з Forecast: heatmap у текстовому вигляді, тренди, пікові години</span></div>
+        <div class="cmd-row"><code>/pi</code><span>🍓 Стан Raspberry Pi: online/offline, кількість записів у БД, температура CPU, uptime</span></div>
+        <div class="cmd-row"><code>/tapo</code><span>🔌 Стан розетки: напруга В, струм А, потужність Вт, стабільність %, guard events</span></div>
+        <div class="cmd-row"><code>/lan</code><span>🏠 Список пристроїв у локальній мережі з MAC, IP, виробником та типом</span></div>
+        <div class="cmd-row"><code>/vpn</code><span>🛡️ Статус VPN: активний/неактивний, країна, IP, ISP сервера, DNS leak тест</span></div>
+        <div class="cmd-row"><code>/storm_test</code><span>🧪 Тест вимкнення живлення (debug режим, без реального вимкнення)</span></div>
+        <div class="cmd-row"><code>/help</code><span>Повний список команд з описом</span></div>
+      </div>
+
+      <div>
+        <div class="mbox mbox-accent" style="margin-bottom:16px">
+          <div class="mbox-title"><div class="notif-icon">🔔</div><div class="notif-icon">🚨</div><div class="notif-icon">📊</div>&nbsp; Автоматичні сповіщення</div>
+          <ul>
+            <li><b style="color:#fff">🚨 Network Down</b> — ping недоступний 5+ хвилин</li>
+            <li><b style="color:#fff">✅ Network Restored</b> — мережа відновилась (час простою)</li>
+            <li><b style="color:#fff">⚡ Power OFF</b> — живлення роутера вимкнено watchdog-ом</li>
+            <li><b style="color:#fff">🆕 New Device</b> — новий пристрій у LAN (MAC + виробник)</li>
+            <li><b style="color:#fff">⚡ Voltage Alert</b> — V&lt;190 або V&gt;250 (розетка вимкнула)</li>
+            <li><b style="color:#fff">📊 Daily Report</b> — щоденний звіт о 9:00</li>
+            <li><b style="color:#fff">🟡 High Ping Alert</b> — ping &gt; 200ms протягом 10хв</li>
+            <li><b style="color:#fff">🍓 Pi Offline</b> — Pi-агент не відповідає 5+ хвилин</li>
+          </ul>
+        </div>
+        <div class="mbox mbox-accent" style="margin-bottom:16px">
+          <div class="mbox-title"><div class="shield-icon" style="width:22px;height:22px;font-size:12px;border-radius:3px;display:inline-flex;align-items:center;justify-content:center;border-color:rgba(184,169,255,0.4);background:rgba(184,169,255,0.1);">🔐</div>&nbsp; Система безпеки</div>
+          <ul>
+            <li><b style="color:#fff">ID Whitelist:</b> бот відповідає тільки якщо chat_id == твій ID. Всі інші отримують мовчання</li>
+            <li><b style="color:#fff">Підтвердження критичних команд:</b> /reboot (вимкнення) вимагає "Так" у наступному повідомленні (inline keyboard)</li>
+            <li><b style="color:#fff">Audit Log:</b> кожна команда записується в events.db з timestamp та chat_id</li>
+            <li><b style="color:#fff">Timeout:</b> підтвердження команди дійсне 30 секунд</li>
+            <li><b style="color:#fff">Rate Limit:</b> не більше 10 команд за хвилину</li>
+          </ul>
+        </div>
+        <div class="mbox mbox-accent">
+          <div class="mbox-title">Приклад відповіді /status</div>
+          <div style="background:rgba(0,0,0,0.6); padding:16px; font-family:var(--font-mono); font-size:12px; line-height:2; border:1px solid var(--border);">
+            <div style="color:var(--lavender)">📊 *Статус мережі NetGuardian*</div>
+            <div style="color:var(--muted)">━━━━━━━━━━━━━━━━━━</div>
+            <div><span style="color:var(--mint)">✓</span> <span style="color:#ccc">Ping:</span> <span style="color:#fff">14ms</span> <span style="color:var(--muted)">· Jitter: 2ms · Loss: 0%</span></div>
+            <div><span style="color:var(--mint)">✓</span> <span style="color:#ccc">ISP:</span> <span style="color:#fff">Kyivstar UA</span> <span style="color:var(--muted)">· IP: 93.x.x.x</span></div>
+            <div><span style="color:var(--mint)">✓</span> <span style="color:#ccc">Pi-агент:</span> <span style="color:#fff">online</span> <span style="color:var(--muted)">(18,432 записів)</span></div>
+            <div><span style="color:var(--gold)">⚡</span> <span style="color:#ccc">Tapo:</span> <span style="color:#fff">221.3V · 7.2W</span> <span style="color:var(--muted)">· stab 99.1%</span></div>
+            <div><span style="color:var(--mint)">✓</span> <span style="color:#ccc">SLA тижень:</span> <span style="color:#fff">99.7%</span></div>
+            <div><span style="color:var(--muted)">🛡️ VPN: не активний</span></div>
+            <div style="color:var(--muted)">━━━━━━━━━━━━━━━━━━</div>
+            <div style="color:var(--muted)">⏰ 2026-05-22 14:32:17</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-divider"></div>
+
+    <div class="mbox mbox-accent">
+      <div class="mbox-title">Інтеграція зі Smart Agent</div>
+      <h3>Як бот взаємодіє з NetGuardian Desktop</h3>
+      <p style="margin-bottom:16px">Telegram Bot — це не окремий застосунок. Він живе всередині NetGuardian і взаємодіє зі Smart Agent — координатором усіх модулів системи. Smart Agent знає поточний стан всіх 11 модулів.</p>
+      <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:12px;">
+        <div style="background:rgba(0,0,0,0.4); padding:16px; border:1px solid var(--border);">
+          <div style="color:var(--lavender); font-family:var(--font-mono); font-size:11px; letter-spacing:2px; margin-bottom:8px;">ОТРИМУЄ ДАНІ</div>
+          <ul>
+            <li style="font-size:12px; color:var(--muted)">Dashboard snapshot (ping/jitter)</li>
+            <li style="font-size:12px; color:var(--muted)">Pi subscriber (MQTT дані)</li>
+            <li style="font-size:12px; color:var(--muted)">Tapo stats (напруга/потужність)</li>
+            <li style="font-size:12px; color:var(--muted)">LAN Security пристрої</li>
+            <li style="font-size:12px; color:var(--muted)">Forecast SLA/аномалії</li>
+          </ul>
+        </div>
+        <div style="background:rgba(0,0,0,0.4); padding:16px; border:1px solid var(--border);">
+          <div style="color:var(--lavender); font-family:var(--font-mono); font-size:11px; letter-spacing:2px; margin-bottom:8px;">ВИКОНУЄ ДІЇ</div>
+          <ul>
+            <li style="font-size:12px; color:var(--muted)">Tapo: вимкнути живлення</li>
+            <li style="font-size:12px; color:var(--muted)">Windows: ipconfig /flushdns</li>
+            <li style="font-size:12px; color:var(--muted)">Screenshot → надіслати фото</li>
+            <li style="font-size:12px; color:var(--muted)">AI: запуск діагностики</li>
+            <li style="font-size:12px; color:var(--muted)">MQTT: запит Pi-агента</li>
+          </ul>
+        </div>
+        <div style="background:rgba(0,0,0,0.4); padding:16px; border:1px solid var(--border);">
+          <div style="color:var(--lavender); font-family:var(--font-mono); font-size:11px; letter-spacing:2px; margin-bottom:8px;">НАДСИЛАЄ СПОВІЩЕННЯ</div>
+          <ul>
+            <li style="font-size:12px; color:var(--muted)">Підписки на події (event bus)</li>
+            <li style="font-size:12px; color:var(--muted)">New device detected</li>
+            <li style="font-size:12px; color:var(--muted)">Network up/down</li>
+            <li style="font-size:12px; color:var(--muted)">Voltage guard event</li>
+            <li style="font-size:12px; color:var(--muted)">Daily/Weekly reports</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  `
+}
+
+}; // end MODALS
+
+// ══════════════════════════════════════════════
+//  OPEN / CLOSE MODAL
+// ══════════════════════════════════════════════
+function openModal(type) {
+  const m = MODALS[type];
+  if (!m) return;
+
+  const overlay = document.getElementById('detailOverlay');
+  const content = document.getElementById('detailContent');
+
+  // Set accent CSS var
+  overlay.style.setProperty('--accent', m.accent);
+
+  // Orb colors per type
+  const orbs = document.querySelectorAll('.morb');
+  if (type === 'desktop') {
+    // DESKTOP — mint/cyan theme
+    orbs[0].style.background = 'rgba(77,255,195,0.32)';
+    orbs[1].style.background = 'rgba(0,217,255,0.22)';
+    orbs[2].style.background = 'rgba(77,255,195,0.18)';
+    orbs[3].style.background = 'rgba(100,255,220,0.14)';
+    orbs[4].style.background = 'rgba(0,180,255,0.16)';
+  } else if (type === 'hardware') {
+    // HARDWARE — coral/orange theme
+    orbs[0].style.background = 'rgba(255,104,85,0.30)';
+    orbs[1].style.background = 'rgba(255,160,50,0.22)';
+    orbs[2].style.background = 'rgba(255,80,40,0.18)';
+    orbs[3].style.background = 'rgba(255,200,80,0.14)';
+    orbs[4].style.background = 'rgba(255,120,60,0.16)';
+  } else {
+    // TELEGRAM — lavender/purple theme
+    orbs[0].style.background = 'rgba(184,169,255,0.30)';
+    orbs[1].style.background = 'rgba(140,120,255,0.22)';
+    orbs[2].style.background = 'rgba(200,180,255,0.20)';
+    orbs[3].style.background = 'rgba(120,100,240,0.16)';
+    orbs[4].style.background = 'rgba(220,200,255,0.18)';
+  }
+
+  content.innerHTML = `
+    <div class="modal-hero">
+      <div class="modal-label" data-prefix="${m.prefix}">${m.label}</div>
+      <div class="modal-title">${m.title}</div>
+      <p class="modal-sub">${m.sub}</p>
+    </div>
+    ${m.html}
+  `;
+
+  overlay.style.display = 'block';
+  overlay.scrollTop = 0;
+  document.body.style.overflow = 'hidden';
+
+  // Animate in
+  overlay.style.opacity = '0';
+  requestAnimationFrame(() => {
+    overlay.style.transition = 'opacity .4s ease';
+    overlay.style.opacity = '1';
+  });
+
+  // Start canvas particle animation
+  startModalParticles(m.accent);
+}
+
+function closeModal() {
+  const overlay = document.getElementById('detailOverlay');
+  overlay.style.opacity = '0';
+  stopModalParticles();
+  setTimeout(() => {
+    overlay.style.display = 'none';
+    document.body.style.overflow = '';
+  }, 350);
+}
+
+// ESC key close
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeModal();
+});
+
+// ── CANVAS PARTICLES ──
+let particleRAF = null;
+function startModalParticles(accentColor) {
+  const canvas = document.getElementById('modalBg');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+
+  // Stop previous
+  if (particleRAF) cancelAnimationFrame(particleRAF);
+
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+
+  // Parse accent hex to rgb
+  let r=77,g=255,b=195;
+  if (accentColor === '#FF6855') { r=255;g=104;b=85; }
+  else if (accentColor === '#B8A9FF') { r=184;g=169;b=255; }
+
+  const NUM = 55;
+  const particles = Array.from({length:NUM}, () => ({
+    x: Math.random() * canvas.width,
+    y: Math.random() * canvas.height,
+    r: Math.random() * 1.5 + 0.4,
+    vx: (Math.random()-.5) * 0.4,
+    vy: (Math.random()-.5) * 0.4,
+    o: Math.random() * 0.5 + 0.1,
+  }));
+
+  function draw() {
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+
+    // Draw connecting lines
+    for (let i=0;i<particles.length;i++) {
+      for (let j=i+1;j<particles.length;j++) {
+        const dx=particles[i].x-particles[j].x;
+        const dy=particles[i].y-particles[j].y;
+        const dist=Math.sqrt(dx*dx+dy*dy);
+        if (dist<160) {
+          ctx.beginPath();
+          ctx.moveTo(particles[i].x,particles[i].y);
+          ctx.lineTo(particles[j].x,particles[j].y);
+          ctx.strokeStyle=`rgba(${r},${g},${b},${(1-dist/160)*0.12})`;
+          ctx.lineWidth=0.5;
+          ctx.stroke();
+        }
+      }
+    }
+
+    // Draw dots
+    particles.forEach(p => {
+      ctx.beginPath();
+      ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+      ctx.fillStyle=`rgba(${r},${g},${b},${p.o})`;
+      ctx.fill();
+
+      p.x+=p.vx; p.y+=p.vy;
+      if (p.x<0||p.x>canvas.width) p.vx*=-1;
+      if (p.y<0||p.y>canvas.height) p.vy*=-1;
+    });
+
+    particleRAF = requestAnimationFrame(draw);
+  }
+  draw();
+
+  window.addEventListener('resize', () => {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  }, {once:true});
+}
+
+function stopModalParticles() {
+  if (particleRAF) { cancelAnimationFrame(particleRAF); particleRAF=null; }
+  const canvas = document.getElementById('modalBg');
+  if (canvas) canvas.getContext('2d').clearRect(0,0,canvas.width,canvas.height);
+}
+
+// Hover effect on arch boxes
+document.querySelectorAll('.arch-box[onclick]').forEach(box => {
+  box.addEventListener('mouseenter', () => {
+    box.style.background = 'rgba(12,12,22,0.95)';
+  });
+  box.addEventListener('mouseleave', () => {
+    box.style.background = '';
+  });
+});
+</script>
+
+<script>// @ts-nocheck
+// ══════════════════════════════════════════════
+//  BORDER GLOW — vanilla JS port
+// ══════════════════════════════════════════════
+
+const GLOW_CONFIGS = {
+  mint:     { h:160, s:100, l:65, colors:['#4DFFC3','#00d9ff','#4DFFC3'] },
+  coral:    { h:10,  s:100, l:67, colors:['#FF6855','#FFD166','#FF6855'] },
+  lavender: { h:255, s:100, l:76, colors:['#B8A9FF','#c084fc','#B8A9FF'] },
+  gold:     { h:42,  s:100, l:70, colors:['#FFD166','#FF6855','#FFD166'] },
+  white:    { h:200, s:50,  l:80, colors:['#ffffff','#4DFFC3','#B8A9FF'] },
+};
+
+const GRAD_POS = ['80% 55%','69% 34%','8% 6%','41% 38%','86% 85%','82% 18%','51% 4%'];
+const COLOR_MAP = [0,1,2,0,1,2,1];
+
+function buildBGlow(el, type='mint', bg='#0D0D20') {
+  if (el.dataset.bglowInit) return;
+  el.dataset.bglowInit = '1';
+
+  const cfg = GLOW_CONFIGS[type] || GLOW_CONFIGS.mint;
+  const {h,s,l,colors} = cfg;
+
+  // Inject edge-light span
+  const span = document.createElement('span');
+  span.className = 'edge-light';
+  el.prepend(span);
+  el.classList.add('bglow');
+
+  // Set gradient vars
+  el.style.setProperty('--bglow-bg', bg);
+  for (let i=0; i<7; i++) {
+    const c = colors[Math.min(COLOR_MAP[i], colors.length-1)];
+    el.style.setProperty(`--g${i+1}`, `radial-gradient(at ${GRAD_POS[i]}, ${c} 0px, transparent 50%)`);
+  }
+  el.style.setProperty('--gb', `linear-gradient(${colors[0]} 0 100%)`);
+
+  // Glow color vars
+  const ops = [1,.6,.5,.4,.3,.2,.1];
+  const sfx = ['','','50','40','30','20','10'];
+  ops.forEach((op,i) => {
+    const key = i===0 ? '--gc' : `--gc-${sfx[i]}`;
+    el.style.setProperty(key, `hsl(${h}deg ${s}% ${l}% / ${(op*100).toFixed(0)}%)`);
+  });
+
+  // Pointer move
+  el.addEventListener('pointermove', e => {
+    const r = el.getBoundingClientRect();
+    const x = e.clientX - r.left;
+    const y = e.clientY - r.top;
+    const cx = r.width/2, cy = r.height/2;
+    const dx = x-cx, dy = y-cy;
+    let kx=Infinity, ky=Infinity;
+    if (dx!==0) kx = cx/Math.abs(dx);
+    if (dy!==0) ky = cy/Math.abs(dy);
+    const edge = Math.min(Math.max(1/Math.min(kx,ky),0),1);
+    let angle = Math.atan2(dy,dx)*(180/Math.PI)+90;
+    if (angle<0) angle+=360;
+    el.style.setProperty('--edge-proximity',(edge*100).toFixed(2));
+    el.style.setProperty('--cursor-angle',`${angle.toFixed(2)}deg`);
+  });
+}
+
+function initAllBGlow() {
+  // Cards grid
+  document.querySelectorAll('.card-3d-inner').forEach(el => buildBGlow(el,'mint','rgba(10,10,28,0.75)'));
+
+  // Arch boxes
+  document.querySelectorAll('#arch1').forEach(el => buildBGlow(el,'mint','rgba(13,13,32,0.72)'));
+  document.querySelectorAll('#arch2').forEach(el => buildBGlow(el,'coral','rgba(13,13,32,0.72)'));
+  document.querySelectorAll('#arch3').forEach(el => buildBGlow(el,'lavender','rgba(13,13,32,0.72)'));
+
+  // Stats
+  document.querySelectorAll('.stat-box').forEach(el => buildBGlow(el,'mint','rgba(13,13,32,0.72)'));
+
+  // Stack items
+  document.querySelectorAll('.stack-item').forEach(el => buildBGlow(el,'white','rgba(13,13,32,0.72)'));
+
+  // Download box
+  document.querySelectorAll('.download-box').forEach(el => buildBGlow(el,'mint','rgba(13,13,32,0.72)'));
+
+  // Diploma card + info panels
+  document.querySelectorAll('.diploma-card').forEach(el => {
+    buildBGlow(el,'mint','rgba(10,10,28,0.65)');
+    el.style.setProperty('--fill-opacity','0.08');  // very subtle fill for text cards
+    el.style.setProperty('--edge-sensitivity','35');
+  });
+  document.querySelectorAll('.info-panel').forEach((el,i) => {
+    buildBGlow(el, i===0?'mint':'coral','rgba(10,10,28,0.60)');
+    el.style.setProperty('--fill-opacity','0.08');
+  });
+
+  // Watchdog visual cards
+  document.querySelectorAll('.watchdog-visual, .watchdog-steps').forEach(el => {
+    buildBGlow(el,'coral','rgba(13,13,32,0.72)');
+    el.style.setProperty('--fill-opacity','0.08');
+  });
+
+  // Telegram mock
+  document.querySelectorAll('.tg-mock').forEach(el => buildBGlow(el,'lavender','rgba(13,13,32,0.72)'));
+
+  // Step items  
+  document.querySelectorAll('.step-item').forEach(el => {
+    buildBGlow(el,'coral','rgba(0,0,0,0.2)');
+    el.style.setProperty('--fill-opacity','0.05');
+  });
+}
+
+document.addEventListener('DOMContentLoaded', initAllBGlow);
+// Also init after a tick for dynamically added elements
+setTimeout(initAllBGlow, 100);
+
+</script>
+
+<script>// @ts-nocheck
+// ══════════════════════════════════════════════
+//  SCROLL REVEAL
+// ══════════════════════════════════════════════
+function initReveal() {
+  // Mark elements to reveal
+  document.querySelectorAll('.section-label, .section-title, .section-desc').forEach(el => {
+    el.classList.add('reveal');
+  });
+  document.querySelectorAll('.cards-grid').forEach(el => {
+    el.classList.add('reveal-stagger');
+    el.querySelectorAll('.card-3d').forEach(c => c.classList.add('reveal'));
+  });
+  document.querySelectorAll('.arch-boxes').forEach(el => {
+    el.classList.add('reveal-stagger');
+    el.querySelectorAll('.arch-box').forEach(c => c.classList.add('reveal'));
+  });
+  document.querySelectorAll('.stack-grid').forEach(el => {
+    el.classList.add('reveal-stagger');
+    el.querySelectorAll('.stack-item').forEach(c => c.classList.add('reveal'));
+  });
+  document.querySelectorAll('.stat-box').forEach((el, i) => {
+    el.classList.add('reveal');
+    el.style.transitionDelay = (i * 0.1) + 's';
+  });
+  document.querySelectorAll('.watchdog-visual').forEach(el => {
+    el.classList.add('reveal', 'reveal-left');
+  });
+  document.querySelectorAll('.watchdog-steps').forEach(el => {
+    el.classList.add('reveal', 'reveal-right');
+  });
+  document.querySelectorAll('.step-item').forEach((el, i) => {
+    el.classList.add('reveal');
+    el.style.transitionDelay = (i * 0.12) + 's';
+  });
+  document.querySelectorAll('.tg-commands').forEach(el => el.classList.add('reveal', 'reveal-left'));
+  document.querySelectorAll('.tg-mock').forEach(el => el.classList.add('reveal', 'reveal-right'));
+  document.querySelectorAll('.download-box').forEach(el => el.classList.add('reveal', 'reveal-scale'));
+  document.querySelectorAll('.diploma-card').forEach(el => el.classList.add('reveal', 'reveal-left'));
+  document.querySelectorAll('.info-panel').forEach((el, i) => {
+    el.classList.add('reveal', 'reveal-right');
+    el.style.transitionDelay = (i * 0.15) + 's';
+  });
+
+  // Hero elements — appear immediately on load
+  document.querySelectorAll('.hero .reveal').forEach(el => {
+    el.classList.add('visible');
+  });
+
+  // IntersectionObserver
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('visible');
+      }
+    });
+  }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+
+  document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+}
+
+document.addEventListener('DOMContentLoaded', initReveal);
+</script>
+</body>
+</html>
